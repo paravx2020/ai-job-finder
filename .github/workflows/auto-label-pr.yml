@@ -1,0 +1,73 @@
+name: Auto-label PRs
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  auto-label:
+    name: Auto-label pull requests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Apply semantic labels
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const semverLabels = [
+              {name: 'major', color: 'd93f0b', description: 'Breaking change or major release'},
+              {name: 'minor', color: '0e8a16', description: 'New feature or minor release'},
+              {name: 'patch', color: '006b75', description: 'Bug fix or patch release'}
+            ]
+
+            const pr = context.payload.pull_request
+            if (!pr) {
+              core.info('No pull request payload available')
+              return
+            }
+
+            const text = `${pr.title}\n${pr.body || ''}`.toLowerCase()
+            const requested = semverLabels.filter(label => text.includes(label.name)).map(label => label.name)
+            if (requested.length === 0) {
+              core.info('No semantic label keywords found in title or body')
+              return
+            }
+
+            const existingLabels = await github.rest.issues.listLabelsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            const existingNames = existingLabels.data.map(label => label.name)
+
+            for (const label of semverLabels) {
+              if (requested.includes(label.name) && !existingNames.includes(label.name)) {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                  color: label.color,
+                  description: label.description,
+                })
+              }
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: requested,
+            })
+
+            const removed = existingNames.filter(name => ['major', 'minor', 'patch'].includes(name) && !requested.includes(name))
+            for (const name of removed) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                name,
+              })
+            }
