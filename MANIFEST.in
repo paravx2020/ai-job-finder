@@ -1,0 +1,15 @@
+include .env.template
+include requirements.txt
+include AGENTS.md
+include MEMORY.md
+include config/scraper_selectors.json
+include data/skills_taxonomy.json
+include docs/guide.md
+include docs/api.md
+include docs/architecture.md
+
+recursive-include alembic *.py
+recursive-include alembic *.mako
+include alembic.ini
+include alembic/env.py
+include alembic/script.py.mako

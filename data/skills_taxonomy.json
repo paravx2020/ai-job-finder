@@ -1,0 +1,490 @@
+{
+  "programming_languages": {
+    "python": {
+      "aliases": ["python3", "python 3", "py"],
+      "related": ["django", "flask", "fastapi", "pandas", "numpy"]
+    },
+    "javascript": {
+      "aliases": ["js", "ecmascript", "es6"],
+      "related": ["typescript", "react", "node.js", "vue"]
+    },
+    "typescript": {
+      "aliases": ["ts"],
+      "related": ["javascript", "react", "angular", "node.js"]
+    },
+    "java": {
+      "aliases": [],
+      "related": ["spring", "spring boot", "maven", "gradle"]
+    },
+    "c++": {
+      "aliases": ["cpp", "c plus plus"],
+      "related": ["c", "rust", "go"]
+    },
+    "c": {
+      "aliases": [],
+      "related": ["c++", "rust", "embedded"]
+    },
+    "go": {
+      "aliases": ["golang"],
+      "related": ["docker", "kubernetes", "microservices"]
+    },
+    "rust": {
+      "aliases": [],
+      "related": ["c++", "webassembly", "systems programming"]
+    },
+    "ruby": {
+      "aliases": [],
+      "related": ["rails", "sinatra"]
+    },
+    "php": {
+      "aliases": [],
+      "related": ["laravel", "symfony", "wordpress"]
+    },
+    "swift": {
+      "aliases": [],
+      "related": ["objective-c", "ios", "xcode"]
+    },
+    "kotlin": {
+      "aliases": [],
+      "related": ["java", "android", "spring"]
+    },
+    "scala": {
+      "aliases": [],
+      "related": ["spark", "akka", "java"]
+    },
+    "r": {
+      "aliases": ["r language"],
+      "related": ["python", "statistics", "ggplot2"]
+    },
+    "sql": {
+      "aliases": ["structured query language"],
+      "related": ["postgresql", "mysql", "sqlite"]
+    },
+    "bash": {
+      "aliases": ["shell", "shell scripting", "sh"],
+      "related": ["linux", "unix", "automation"]
+    },
+    "html": {
+      "aliases": ["html5"],
+      "related": ["css", "javascript", "web development"]
+    },
+    "css": {
+      "aliases": ["css3"],
+      "related": ["html", "javascript", "sass", "bootstrap"]
+    },
+    "dart": {
+      "aliases": [],
+      "related": ["flutter", "mobile development"]
+    },
+    "perl": {
+      "aliases": [],
+      "related": ["scripting", "regex", "system administration"]
+    },
+    "lua": {
+      "aliases": [],
+      "related": ["game development", "embedded", "scripting"]
+    },
+    "matlab": {
+      "aliases": [],
+      "related": ["data analysis", "engineering", "simulink"]
+    },
+    "groovy": {
+      "aliases": [],
+      "related": ["java", "gradle", "jenkins"]
+    },
+    "objective-c": {
+      "aliases": ["objc"],
+      "related": ["swift", "ios", "macos"]
+    }
+  },
+  "frameworks_libraries": {
+    "react": {
+      "aliases": ["reactjs", "react.js"],
+      "related": ["javascript", "typescript", "next.js", "redux"]
+    },
+    "django": {
+      "aliases": [],
+      "related": ["python", "rest framework", "postgresql"]
+    },
+    "flask": {
+      "aliases": [],
+      "related": ["python", "api", "rest"]
+    },
+    "fastapi": {
+      "aliases": [],
+      "related": ["python", "api", "async", "pydantic"]
+    },
+    "spring boot": {
+      "aliases": ["springboot", "spring"],
+      "related": ["java", "microservices", "rest"]
+    },
+    "node.js": {
+      "aliases": ["node", "nodejs"],
+      "related": ["javascript", "express", "npm"]
+    },
+    "express": {
+      "aliases": ["express.js"],
+      "related": ["node.js", "javascript", "rest"]
+    },
+    "angular": {
+      "aliases": ["angularjs"],
+      "related": ["typescript", "javascript", "rxjs"]
+    },
+    "vue": {
+      "aliases": ["vue.js", "vuejs"],
+      "related": ["javascript", "nuxt", "typescript"]
+    },
+    "next.js": {
+      "aliases": ["nextjs", "next"],
+      "related": ["react", "javascript", "typescript"]
+    },
+    "rails": {
+      "aliases": ["ruby on rails", "ror"],
+      "related": ["ruby", "postgresql", "redis"]
+    },
+    "laravel": {
+      "aliases": [],
+      "related": ["php", "mysql", "redis"]
+    },
+    "tensorflow": {
+      "aliases": ["tf"],
+      "related": ["python", "keras", "machine learning", "deep learning"]
+    },
+    "pytorch": {
+      "aliases": ["torch"],
+      "related": ["python", "machine learning", "deep learning"]
+    },
+    "pandas": {
+      "aliases": [],
+      "related": ["python", "numpy", "data analysis"]
+    },
+    "numpy": {
+      "aliases": [],
+      "related": ["python", "pandas", "scipy", "data science"]
+    },
+    "scikit-learn": {
+      "aliases": ["sklearn", "scikit learn"],
+      "related": ["python", "machine learning", "pandas", "numpy"]
+    },
+    "svelte": {
+      "aliases": ["svelte.js"],
+      "related": ["javascript", "frontend", "compiler"]
+    },
+    "jquery": {
+      "aliases": [],
+      "related": ["javascript", "dom", "frontend"]
+    },
+    "bootstrap": {
+      "aliases": [],
+      "related": ["css", "frontend", "responsive design"]
+    },
+    "graphql": {
+      "aliases": [],
+      "related": ["api", "rest", "apollo"]
+    },
+    "kafka": {
+      "aliases": ["apache kafka"],
+      "related": ["streaming", "event-driven", "microservices"]
+    },
+    "rabbitmq": {
+      "aliases": [],
+      "related": ["message queue", "microservices", "amqp"]
+    },
+    "opencv": {
+      "aliases": [],
+      "related": ["computer vision", "python", "c++"]
+    }
+  },
+  "databases": {
+    "postgresql": {
+      "aliases": ["postgres"],
+      "related": ["sql", "database", "pgadmin"]
+    },
+    "mysql": {
+      "aliases": [],
+      "related": ["sql", "database", "mariadb"]
+    },
+    "mongodb": {
+      "aliases": ["mongo"],
+      "related": ["nosql", "database", "mongoose"]
+    },
+    "redis": {
+      "aliases": [],
+      "related": ["cache", "nosql", "database"]
+    },
+    "sqlite": {
+      "aliases": [],
+      "related": ["sql", "database", "python"]
+    },
+    "elasticsearch": {
+      "aliases": ["elastic", "es"],
+      "related": ["search", "nosql", "kibana"]
+    },
+    "dynamodb": {
+      "aliases": ["dynamo db"],
+      "related": ["aws", "nosql", "database"]
+    },
+    "cassandra": {
+      "aliases": [],
+      "related": ["nosql", "database", "distributed"]
+    },
+    "neo4j": {
+      "aliases": [],
+      "related": ["graph database", "cypher", "nosql"]
+    },
+    "snowflake": {
+      "aliases": [],
+      "related": ["data warehouse", "cloud", "sql"]
+    },
+    "bigquery": {
+      "aliases": ["google bigquery"],
+      "related": ["gcp", "data warehouse", "analytics"]
+    }
+  },
+  "cloud_devops": {
+    "aws": {
+      "aliases": ["amazon web services"],
+      "related": ["ec2", "s3", "lambda", "cloud"]
+    },
+    "gcp": {
+      "aliases": ["google cloud", "google cloud platform"],
+      "related": ["cloud", "bigquery", "cloud functions"]
+    },
+    "azure": {
+      "aliases": ["microsoft azure"],
+      "related": ["cloud", "devops", "azure devops"]
+    },
+    "docker": {
+      "aliases": [],
+      "related": ["containers", "kubernetes", "devops"]
+    },
+    "kubernetes": {
+      "aliases": ["k8s", "kube"],
+      "related": ["docker", "containers", "devops", "helm"]
+    },
+    "terraform": {
+      "aliases": [],
+      "related": ["infrastructure as code", "aws", "gcp", "devops"]
+    },
+    "jenkins": {
+      "aliases": [],
+      "related": ["ci/cd", "devops", "automation"]
+    },
+    "github actions": {
+      "aliases": ["github-actions", "gh actions"],
+      "related": ["ci/cd", "devops", "automation"]
+    },
+    "ansible": {
+      "aliases": [],
+      "related": ["automation", "devops", "configuration management"]
+    },
+    "linux": {
+      "aliases": ["ubuntu", "debian", "centos", "rhel"],
+      "related": ["bash", "shell", "sysadmin"]
+    },
+    "nginx": {
+      "aliases": [],
+      "related": ["web server", "reverse proxy", "load balancer"]
+    },
+    "ci/cd": {
+      "aliases": ["continuous integration", "continuous deployment", "continuous delivery"],
+      "related": ["jenkins", "github actions", "devops"]
+    },
+    "prometheus": {
+      "aliases": [],
+      "related": ["monitoring", "metrics", "grafana"]
+    },
+    "grafana": {
+      "aliases": [],
+      "related": ["monitoring", "dashboard", "prometheus"]
+    },
+    "helm": {
+      "aliases": [],
+      "related": ["kubernetes", "package manager", "devops"]
+    }
+  },
+  "data_ml_ai": {
+    "machine learning": {
+      "aliases": ["ml"],
+      "related": ["python", "scikit-learn", "tensorflow", "pytorch"]
+    },
+    "deep learning": {
+      "aliases": ["dl"],
+      "related": ["neural networks", "tensorflow", "pytorch"]
+    },
+    "natural language processing": {
+      "aliases": ["nlp"],
+      "related": ["machine learning", "transformers", "spacy", "nltk"]
+    },
+    "computer vision": {
+      "aliases": ["cv"],
+      "related": ["deep learning", "opencv", "image processing"]
+    },
+    "data analysis": {
+      "aliases": ["data analytics"],
+      "related": ["python", "pandas", "sql", "visualization"]
+    },
+    "data engineering": {
+      "aliases": [],
+      "related": ["spark", "airflow", "etl", "pipelines"]
+    },
+    "spark": {
+      "aliases": ["apache spark", "pyspark"],
+      "related": ["big data", "scala", "python", "data engineering"]
+    },
+    "airflow": {
+      "aliases": ["apache airflow"],
+      "related": ["data engineering", "etl", "pipelines", "python"]
+    },
+    "tableau": {
+      "aliases": [],
+      "related": ["data visualization", "business intelligence", "analytics"]
+    },
+    "power bi": {
+      "aliases": ["powerbi"],
+      "related": ["data visualization", "business intelligence", "microsoft"]
+    },
+    "statistics": {
+      "aliases": ["statistical analysis"],
+      "related": ["r", "python", "data science", "hypothesis testing"]
+    },
+    "keras": {
+      "aliases": [],
+      "related": ["tensorflow", "deep learning", "neural networks"]
+    },
+    "huggingface": {
+      "aliases": ["hugging face"],
+      "related": ["transformers", "nlp", "pytorch"]
+    },
+    "etl": {
+      "aliases": ["extract transform load"],
+      "related": ["data engineering", "airflow", "spark", "pipelines"]
+    }
+  },
+  "tools_platforms": {
+    "git": {
+      "aliases": [],
+      "related": ["github", "gitlab", "version control"]
+    },
+    "github": {
+      "aliases": [],
+      "related": ["git", "pull requests", "actions"]
+    },
+    "gitlab": {
+      "aliases": [],
+      "related": ["git", "ci/cd", "devops"]
+    },
+    "jira": {
+      "aliases": [],
+      "related": ["agile", "scrum", "project management"]
+    },
+    "confluence": {
+      "aliases": [],
+      "related": ["documentation", "atlassian", "wiki"]
+    },
+    "slack": {
+      "aliases": [],
+      "related": ["communication", "messaging", "collaboration"]
+    },
+    "vs code": {
+      "aliases": ["visual studio code", "vscode"],
+      "related": ["editor", "ide", "development"]
+    },
+    "postman": {
+      "aliases": [],
+      "related": ["api testing", "rest", "development"]
+    },
+    "intellij idea": {
+      "aliases": ["intellij"],
+      "related": ["java", "kotlin", "ide"]
+    },
+    "docker compose": {
+      "aliases": [],
+      "related": ["docker", "containers", "devops"]
+    },
+    "figma": {
+      "aliases": [],
+      "related": ["design", "ui/ux", "prototyping"]
+    }
+  },
+  "soft_skills": {
+    "leadership": {
+      "aliases": ["team lead", "tech lead", "technical lead"],
+      "related": ["management", "mentoring", "communication"]
+    },
+    "communication": {
+      "aliases": ["verbal communication", "written communication"],
+      "related": ["presentation", "collaboration", "teamwork"]
+    },
+    "problem solving": {
+      "aliases": ["analytical thinking", "critical thinking"],
+      "related": ["debugging", "troubleshooting", "logic"]
+    },
+    "teamwork": {
+      "aliases": ["team player", "collaboration"],
+      "related": ["communication", "agile", "scrum"]
+    },
+    "project management": {
+      "aliases": ["pm"],
+      "related": ["agile", "scrum", "kanban", "planning"]
+    },
+    "agile": {
+      "aliases": ["agile methodology"],
+      "related": ["scrum", "kanban", "sprint"]
+    },
+    "scrum": {
+      "aliases": [],
+      "related": ["agile", "sprint", "standup", "retrospective"]
+    },
+    "mentoring": {
+      "aliases": ["mentorship", "coaching"],
+      "related": ["leadership", "teaching", "knowledge sharing"]
+    },
+    "adaptability": {
+      "aliases": ["flexibility"],
+      "related": ["learning", "change management", "resilience"]
+    },
+    "time management": {
+      "aliases": ["organization", "prioritization"],
+      "related": ["productivity", "planning", "efficiency"]
+    },
+    "conflict resolution": {
+      "aliases": [],
+      "related": ["communication", "negotiation", "teamwork"]
+    }
+  },
+  "cybersecurity": {
+    "penetration testing": {
+      "aliases": ["pentesting", "ethical hacking"],
+      "related": ["security", "vulnerability assessment", "networking"]
+    },
+    "cryptography": {
+      "aliases": [],
+      "related": ["security", "encryption", "ssl/tls"]
+    },
+    "firewall management": {
+      "aliases": [],
+      "related": ["network security", "infrastructure", "iptables"]
+    },
+    "incident response": {
+      "aliases": ["ir"],
+      "related": ["security operations", "forensics", "threat hunting"]
+    },
+    "owasp": {
+      "aliases": [],
+      "related": ["web security", "application security", "vulnerabilities"]
+    },
+    "siem": {
+      "aliases": ["security information and event management"],
+      "related": ["monitoring", "security", "splunk"]
+    },
+    "identity and access management": {
+      "aliases": ["iam"],
+      "related": ["sso", "oauth", "active directory"]
+    },
+    "network security": {
+      "aliases": [],
+      "related": ["firewall", "vpn", " intrusion detection"]
+    }
+  }
+}

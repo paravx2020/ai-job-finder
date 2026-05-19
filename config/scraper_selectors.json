@@ -1,0 +1,32 @@
+{
+  "linkedin": {
+    "job_card": ".job-card-container",
+    "title": ".job-card-list__title",
+    "title_link": "a",
+    "company": ".job-card-container__company-name",
+    "location": ".job-card-container__metadata-item",
+    "description": ".show-more-less-html__markup",
+    "apply_button": ".jobs-apply-button",
+    "scroll_container": ".jobs-search__results-list"
+  },
+  "indeed": {
+    "job_card": ".job_seen_beacon",
+    "title": "h2.jobTitle a",
+    "company": "[data-testid='companyName']",
+    "location": "[data-testid='text-location']",
+    "salary": "[data-testid='attribute_snippet_testid']",
+    "description": "#jobDescriptionText",
+    "apply_button": "[data-testid='applyButton']",
+    "scroll_container": "#ResultsContainer"
+  },
+  "glassdoor": {
+    "job_card": "[data-test='jobListing']",
+    "title": "[data-test='jobLink']",
+    "company": "[data-test='employerName']",
+    "location": "[data-test='location']",
+    "salary": "[data-test='salarySource']",
+    "description": "[data-test='jobDescriptionContent']",
+    "apply_button": "[data-test='apply-btn']",
+    "scroll_container": "[data-test='JobListingResults']"
+  }
+}

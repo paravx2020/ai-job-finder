@@ -1,0 +1,31 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+data/*.db
+data/cvs/*
+!data/cvs/.gitkeep
+*.egg-info/
+dist/
+build/
+.playwright/
+node_modules/
+
+# Code quality
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+coverage.xml
+.coverage
+htmlcov/
+
+# Pre-commit
+.pre-commit-config.yaml.bak
+
+# Export reports
+*.pdf
+!docs/
+
+# Cache
+data/cache/
+data/latest_matches.json
