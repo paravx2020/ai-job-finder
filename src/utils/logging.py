@@ -14,7 +14,6 @@ Usage:
 from __future__ import annotations
 
 import logging
-import sys
 from contextvars import ContextVar
 from typing import Any
 
@@ -27,6 +26,7 @@ _log_context: ContextVar[dict[str, Any]] = ContextVar("log_context", default={})
 
 
 # ── Custom Formatter ────────────────────────────────────────────────────────
+
 
 class ContextFormatter(logging.Formatter):
     """Formatter that injects context variables into log records."""
@@ -93,9 +93,7 @@ def setup_logging(
         tracebacks_show_locals=verbose,
     )
     rich_handler.setLevel(level)
-    rich_handler.setFormatter(
-        ContextFormatter("%(message)s", datefmt="[%X]")
-    )
+    rich_handler.setFormatter(ContextFormatter("%(message)s", datefmt="[%X]"))
     root_logger.addHandler(rich_handler)
 
     # Optional file handler (JSON format)
@@ -141,6 +139,7 @@ def get_logger(name: str) -> logging.Logger:
 
 # ── Context Manager for Log Enrichment ───────────────────────────────────────
 
+
 class LogContext:
     """Context manager that adds key-value pairs to all log records
     within its scope.
@@ -167,6 +166,7 @@ class LogContext:
 
 
 # ── Convenience Functions ────────────────────────────────────────────────────
+
 
 def log_exception(logger: logging.Logger, error: Exception, context: str = "") -> None:
     """Log an exception with full traceback.

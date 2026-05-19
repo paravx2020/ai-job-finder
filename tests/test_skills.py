@@ -2,13 +2,7 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
-import pytest
-
 from src.utils.skills import (
-    _build_fallback_taxonomy,
     categorize_skill,
     expand_skills,
     find_related_skills,

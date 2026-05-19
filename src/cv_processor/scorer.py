@@ -1,15 +1,32 @@
 """Score CV quality across multiple dimensions."""
 
 import re
-from typing import Any
 
-from src.utils.models import ParsedCV, ScoreDetail, ScoredCV
+from src.utils.models import ParsedCV, ScoredCV, ScoreDetail
 
 ACTION_VERBS = {
-    "achieved", "developed", "implemented", "designed", "led", "managed",
-    "created", "built", "launched", "optimized", "delivered", "drove",
-    "established", "generated", "improved", "increased", "reduced",
-    "resolved", "spearheaded", "transformed", "mentored", "coordinated",
+    "achieved",
+    "developed",
+    "implemented",
+    "designed",
+    "led",
+    "managed",
+    "created",
+    "built",
+    "launched",
+    "optimized",
+    "delivered",
+    "drove",
+    "established",
+    "generated",
+    "improved",
+    "increased",
+    "reduced",
+    "resolved",
+    "spearheaded",
+    "transformed",
+    "mentored",
+    "coordinated",
 }
 
 QUANTIFIED_PATTERN = re.compile(r"\d+%|\$\d+|\d+x|\d+\s*(?:users|clients|customers|people|team)")
@@ -72,7 +89,13 @@ def score_cv(data: ParsedCV) -> ScoredCV:
         ats_compatibility=round(score_ats_compatibility(text), 2),
     )
     overall = round(
-        (detail.keyword_density + detail.quantified_achievements + detail.section_completeness + detail.ats_compatibility) / 4,
+        (
+            detail.keyword_density
+            + detail.quantified_achievements
+            + detail.section_completeness
+            + detail.ats_compatibility
+        )
+        / 4,
         2,
     )
 

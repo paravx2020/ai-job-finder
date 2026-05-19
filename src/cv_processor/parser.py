@@ -2,13 +2,13 @@
 
 import re
 from pathlib import Path
-from typing import Optional
 
-import PyPDF2
 import docx
+import PyPDF2
 import spacy
+
 from src.utils.models import ParsedCV
-from src.utils.skills import get_all_skills, categorize_skill
+from src.utils.skills import categorize_skill, get_all_skills
 
 # Load spaCy model (download: python -m spacy download en_core_web_sm)
 try:
@@ -92,13 +92,20 @@ def extract_entities(text: str) -> dict:
 def parse_cv(path: Path) -> ParsedCV:
     text = extract_text(path)
     headings = [
-        "summary", "experience", "education", "skills", "projects",
-        "certifications", "publications", "languages", "interests",
+        "summary",
+        "experience",
+        "education",
+        "skills",
+        "projects",
+        "certifications",
+        "publications",
+        "languages",
+        "interests",
     ]
 
     sections = {}
     for i, h in enumerate(headings):
-        remaining = headings[i + 1:] if i + 1 < len(headings) else []
+        remaining = headings[i + 1 :] if i + 1 < len(headings) else []
         content = _find_section(text, h, remaining)
         if content:
             sections[h] = content

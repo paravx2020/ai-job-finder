@@ -9,9 +9,12 @@ from urllib.parse import quote
 from playwright.sync_api import sync_playwright
 
 from config import SCRAPER_DELAY, SCRAPER_TIMEOUT, USER_AGENT
-from .base import BaseScraper, JobPosting, with_retry
 from src.utils.logging import get_logger
+
+from .base import BaseScraper, JobPosting, with_retry
+
 logger = get_logger(__name__)
+
 
 class GlassdoorScraper(BaseScraper):
     """Scrape job listings from Glassdoor."""
@@ -56,7 +59,9 @@ class GlassdoorScraper(BaseScraper):
                 self._scroll_results(page)
 
                 # Extract job cards
-                cards = page.locator(self.selectors.get("job_card", "[data-test='jobListing']")).all()
+                cards = page.locator(
+                    self.selectors.get("job_card", "[data-test='jobListing']")
+                ).all()
 
                 for card in cards[:max_results]:
                     try:
@@ -122,17 +127,23 @@ class GlassdoorScraper(BaseScraper):
             url = f"{self.BASE_URL}{href}" if href and href.startswith("/") else href
 
             # Company
-            company_el = card.locator(self.selectors.get("company", "[data-test='employerName']")).first
+            company_el = card.locator(
+                self.selectors.get("company", "[data-test='employerName']")
+            ).first
             company = company_el.inner_text(timeout=1000).strip()
 
             # Location
-            location_el = card.locator(self.selectors.get("location", "[data-test='location']")).first
+            location_el = card.locator(
+                self.selectors.get("location", "[data-test='location']")
+            ).first
             location = location_el.inner_text(timeout=1000).strip()
 
             # Salary (optional)
             salary = ""
             try:
-                salary_el = card.locator(self.selectors.get("salary", "[data-test='salarySource']")).first
+                salary_el = card.locator(
+                    self.selectors.get("salary", "[data-test='salarySource']")
+                ).first
                 salary = salary_el.inner_text(timeout=1000).strip()
             except Exception:
                 pass
@@ -142,7 +153,9 @@ class GlassdoorScraper(BaseScraper):
             try:
                 title_el.click(timeout=2000)
                 time.sleep(1.5)
-                desc_el = page.locator(self.selectors.get("description", "[data-test='jobDescriptionContent']")).first
+                desc_el = page.locator(
+                    self.selectors.get("description", "[data-test='jobDescriptionContent']")
+                ).first
                 description = desc_el.inner_text(timeout=3000).strip()
             except Exception:
                 pass

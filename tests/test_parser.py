@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from unittest.mock import patch
 
 import pytest
@@ -83,7 +81,7 @@ class TestParseCV:
 
         pdf = tmp_path / "test.pdf"
         pdf.write_text("dummy")
-        
+
         mock_extract.return_value = "SUMMARY\nExperienced engineer.\nSKILLS\nPython, Docker"
 
         result = parse_cv(pdf)
@@ -95,13 +93,12 @@ class TestParseCV:
     @patch("src.cv_processor.parser.extract_text")
     def test_parse_extracts_word_count(self, mock_extract, tmp_path):
         """parse_cv should return word count."""
-        from src.utils.models import ParsedCV
 
         pdf = tmp_path / "test2.pdf"
         pdf.write_text("dummy")
-        
+
         mock_extract.return_value = "one two three four five"
-        
+
         result = parse_cv(pdf)
         assert isinstance(result.word_count, int)
         assert result.word_count == 5

@@ -1,12 +1,8 @@
 """AI-powered CV improvement using Gemini/OpenAI."""
 
-import json
-from typing import Optional
-
+from config import AI_MODEL, GEMINI_API_KEY, OPENAI_API_KEY
 from src.utils.cache import cached_ai_call
-from src.utils.models import CVImprovement, ChangeDetail, ParsedCV
-
-from config import GEMINI_API_KEY, OPENAI_API_KEY, AI_MODEL
+from src.utils.models import ChangeDetail, CVImprovement, ParsedCV
 
 # ── AI Client ────────────────────────────────────────────────────────────────
 
@@ -19,10 +15,12 @@ def _get_client():
         return _ai_client
     if GEMINI_API_KEY:
         import google.generativeai as genai
+
         genai.configure(api_key=GEMINI_API_KEY)
         _ai_client = ("gemini", genai)
     elif OPENAI_API_KEY:
         from openai import OpenAI
+
         _ai_client = ("openai", OpenAI(api_key=OPENAI_API_KEY))
     else:
         raise RuntimeError("No AI API key found. Set GEMINI_API_KEY or OPENAI_API_KEY in .env")
@@ -44,7 +42,10 @@ def _call_ai(prompt: str, model: str, section: str) -> str:
         resp = client.chat.completions.create(
             model=model_name,
             messages=[
-                {"role": "system", "content": f"You are an expert resume writer improving the {section} section."},
+                {
+                    "role": "system",
+                    "content": f"You are an expert resume writer improving the {section} section.",
+                },
                 {"role": "user", "content": prompt},
             ],
             temperature=0.4,
@@ -81,7 +82,9 @@ IMPROVEMENT_PROMPTS = {
 def improve_section(section: str, text: str, domain: str = "software engineering") -> str:
     if not text.strip():
         return text
-    prompt_template = IMPROVEMENT_PROMPTS.get(section, "Improve the following text for a resume:\n\n{text}")
+    prompt_template = IMPROVEMENT_PROMPTS.get(
+        section, "Improve the following text for a resume:\n\n{text}"
+    )
     prompt = prompt_template.format(text=text, domain=domain)
     return _call_ai(prompt=prompt, model=AI_MODEL, section=section)
 
@@ -107,11 +110,13 @@ def improve_cv(parsed_cv: ParsedCV, domain: str = "software engineering") -> CVI
             new_text = improve_section(section_name, original, domain)
             if new_text and new_text != original:
                 improved[section_name] = new_text
-                changes.append({
-                    "section": section_name,
-                    "original_length": len(original),
-                    "new_length": len(new_text),
-                })
+                changes.append(
+                    {
+                        "section": section_name,
+                        "original_length": len(original),
+                        "new_length": len(new_text),
+                    }
+                )
             progress.advance(task)
 
     return CVImprovement(improved_sections=improved, changes=[ChangeDetail(**c) for c in changes])

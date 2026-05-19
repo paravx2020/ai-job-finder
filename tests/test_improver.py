@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
-
-from src.cv_processor.improver import improve_section, improve_cv
+from src.cv_processor.improver import improve_cv, improve_section
 from src.utils.models import CVImprovement, ParsedCV
 
 

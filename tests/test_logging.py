@@ -51,7 +51,7 @@ class TestLoggingSetup:
     def test_idempotent_setup(self):
         """Calling setup_logging twice should not add duplicate handlers."""
         setup_logging(verbose=False)
-        log1 = get_logger("test.idemp")
+        get_logger("test.idemp")
         handler_count = len(logging.getLogger("ai_job_finder").handlers)
 
         setup_logging(verbose=False)
@@ -66,7 +66,7 @@ class TestLogContext:
     def test_context_adds_fields(self):
         """LogContext should add fields to log records."""
         setup_logging(verbose=False)
-        logger = get_logger("test.context")
+        get_logger("test.context")
 
         with LogContext(user_id="test123"):
             # Context is set during the block

@@ -90,7 +90,7 @@ def validate_salary_range(salary: str | None) -> bool:
         return True
     if not isinstance(salary, str):
         return False
-    pattern = r"^[\$€£]?\s*[\d,]+(k|K)?(\s*[-–to]+\s*[\$€£]?\s*[\d,]+(k|K)?)?$"
+    pattern = r"^[\$€£]?\s*[\d,]+(k|K)?(\s*[-to]+\s*[\$€£]?\s*[\d,]+(k|K)?)?$"
     return bool(re.match(pattern, salary.strip()))
 
 

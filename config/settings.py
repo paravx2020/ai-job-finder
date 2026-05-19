@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -36,7 +37,7 @@ SIMILARITY_THRESHOLD = 0.5  # minimum cosine similarity to consider
 
 # --- Scraping ---
 SCRAPER_TIMEOUT = 30000  # ms
-SCRAPER_DELAY = (2, 5)   # random delay between requests (min, max) seconds
+SCRAPER_DELAY = (2, 5)  # random delay between requests (min, max) seconds
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "

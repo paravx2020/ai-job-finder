@@ -1,12 +1,18 @@
 """Console-based notification using Rich."""
 
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
-from rich.markdown import Markdown
-from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TaskProgressColumn, TimeElapsedColumn
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
+from rich.table import Table
 
-from src.utils.models import ScoredCV, ChangeDetail
+from src.utils.models import ChangeDetail, ScoredCV
 
 console = Console()
 
@@ -38,13 +44,15 @@ def print_job_results(results: list[dict]):
 
     for i, r in enumerate(results, 1):
         reason = r.get("reason", "")
-        console.print(Panel(
-            f"[bold]{i}. {r['job']['title']}[/bold] @ {r['job']['company']}\n"
-            f"   Match: [green]{r['match_percentage']}[/green] | "
-            f"   URL: [blue]{r['job']['url']}[/blue]\n"
-            f"   [dim]{reason}[/dim]",
-            title=f"Match #{i}",
-        ))
+        console.print(
+            Panel(
+                f"[bold]{i}. {r['job']['title']}[/bold] @ {r['job']['company']}\n"
+                f"   Match: [green]{r['match_percentage']}[/green] | "
+                f"   URL: [blue]{r['job']['url']}[/blue]\n"
+                f"   [dim]{reason}[/dim]",
+                title=f"Match #{i}",
+            )
+        )
 
 
 def print_cv_score(score_data: ScoredCV):
@@ -67,9 +75,7 @@ def print_cv_score(score_data: ScoredCV):
 
 def print_improvement_diff(changes: list[ChangeDetail]):
     for c in changes:
-        console.print(
-            f"  • {c.section}: {c.original_length} → {c.new_length} chars"
-        )
+        console.print(f"  • {c.section}: {c.original_length} → {c.new_length} chars")
 
 
 def create_progress() -> Progress:

@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime
-from typing import Generator
 
 from sqlalchemy import (
-    Column, DateTime, Float, ForeignKey, Integer, JSON, String, Text, create_engine
+    JSON,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    create_engine,
 )
 from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
 
@@ -18,24 +26,26 @@ Base = declarative_base()
 SessionLocal = sessionmaker(bind=engine)
 
 __all__ = [
-    "Base",
-    "UserProfile",
-    "User",
-    "JobPosting",
     "Application",
+    "Base",
     "CVImprovementLog",
-    "init_db",
+    "JobPosting",
+    "User",
+    "UserProfile",
+    "find_job_by_url",
     "get_engine",
     "get_session",
+    "init_db",
     "session_scope",
-    "find_job_by_url",
 ]
 
 
 # ── Models ──────────────────────────────────────────────────────────────────
 
+
 class UserProfile(Base):
     """User profile with preferences and contact info."""
+
     __tablename__ = "user_profiles"
     id = Column(Integer, primary_key=True)
     email = Column(String(255), unique=True, nullable=False)
@@ -54,7 +64,7 @@ class User(Base):
     name = Column(String(255))
     email = Column(String(255), unique=True)
     raw_cv_path = Column(String(500))
-    parsed_cv = Column(JSON)          # structured CV data
+    parsed_cv = Column(JSON)  # structured CV data
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -62,7 +72,7 @@ class User(Base):
 class JobPosting(Base):
     __tablename__ = "job_postings"
     id = Column(Integer, primary_key=True)
-    source = Column(String(50))        # linkedin, indeed, glassdoor
+    source = Column(String(50))  # linkedin, indeed, glassdoor
     title = Column(String(255))
     company = Column(String(255))
     description = Column(Text)
@@ -100,6 +110,7 @@ class CVImprovementLog(Base):
 
 
 # ── Database Functions ──────────────────────────────────────────────────────
+
 
 def init_db() -> None:
     """Create all tables if they don't exist.
@@ -155,7 +166,6 @@ def get_session() -> Session:
     return SessionLocal()
 
 
-
 def find_job_by_url(session, url: str):
     """Find an existing job posting by URL.
 
@@ -168,17 +178,18 @@ def find_job_by_url(session, url: str):
     """
     return session.query(JobPosting).filter(JobPosting.url == url).first()
 
+
 def run_migrations() -> None:
     """Run Alembic migrations to bring the database to the latest schema.
 
     Falls back to init_db() if Alembic is not configured.
     """
     try:
-        from alembic.config import Config
         from alembic import command
+        from alembic.config import Config
 
-        alembic_cfg = Config('alembic.ini')
-        command.upgrade(alembic_cfg, 'head')
+        alembic_cfg = Config("alembic.ini")
+        command.upgrade(alembic_cfg, "head")
     except Exception:
         # Fallback: create tables directly if Alembic fails
         init_db()

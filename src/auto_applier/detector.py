@@ -15,7 +15,7 @@ Usage:
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
+from typing import Any, ClassVar
 
 from playwright.sync_api import Page
 
@@ -26,6 +26,7 @@ logger = get_logger(__name__)
 
 class CaptchaType(str, Enum):
     """Types of CAPTCHA challenges."""
+
     RECAPTCHA = "recaptcha"
     HCAPTCHA = "hcaptcha"
     CLOUDFLARE = "cloudflare"
@@ -37,7 +38,7 @@ class PageDetector:
     """Detects CAPTCHA challenges and anti-bot measures on web pages."""
 
     # CSS selectors for common CAPTCHA elements
-    CAPTCHA_SELECTORS: list[str] = [
+    CAPTCHA_SELECTORS: ClassVar[list[str]] = [
         # reCAPTCHA
         "iframe[src*='recaptcha']",
         "div.g-recaptcha",
@@ -54,7 +55,7 @@ class PageDetector:
     ]
 
     # Text patterns that indicate a CAPTCHA or verification challenge
-    CAPTCHA_TEXT_PATTERNS: list[str] = [
+    CAPTCHA_TEXT_PATTERNS: ClassVar[list[str]] = [
         "verify you are human",
         "verify you're human",
         "prove you're a human",
@@ -68,7 +69,7 @@ class PageDetector:
     ]
 
     # Anti-bot indicators (URL patterns, page titles)
-    ANTI_BOT_INDICATORS: list[str] = [
+    ANTI_BOT_INDICATORS: ClassVar[list[str]] = [
         "access denied",
         "blocked",
         "challenge-platform",
@@ -125,7 +126,9 @@ class PageDetector:
         # Method 3: Check URL for challenge indicators
         try:
             url = page.url.lower()
-            if any(indicator in url for indicator in ["challenge", "captcha", "verify", "turnstile"]):
+            if any(
+                indicator in url for indicator in ["challenge", "captcha", "verify", "turnstile"]
+            ):
                 logger.warning("CAPTCHA detected via URL pattern: %s", url)
                 return {
                     "detected": True,
@@ -148,8 +151,14 @@ class PageDetector:
             True if a login wall is detected.
         """
         login_indicators = [
-            "sign in", "log in", "login", "sign up", "register",
-            "create account", "please log in", "authentication required",
+            "sign in",
+            "log in",
+            "login",
+            "sign up",
+            "register",
+            "create account",
+            "please log in",
+            "authentication required",
         ]
 
         login_selectors = [
@@ -198,8 +207,12 @@ class PageDetector:
             url = page.url.lower()
 
             rate_limit_indicators = [
-                "too many requests", "rate limit", "rate-limited",
-                "slow down", "try again later", "429",
+                "too many requests",
+                "rate limit",
+                "rate-limited",
+                "slow down",
+                "try again later",
+                "429",
             ]
 
             for indicator in rate_limit_indicators:

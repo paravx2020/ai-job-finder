@@ -6,7 +6,6 @@ mocked external services and an isolated test database.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -35,16 +34,16 @@ def test_db(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("src.database.DB_PATH", db_path)
     monkeypatch.setattr("config.DB_PATH", db_path)
-    
+
     engine = create_engine(f"sqlite:///{db_path}", echo=False)
     Base.metadata.create_all(engine)
-    
+
     # Replace session factory
     monkeypatch.setattr("src.database.engine", engine)
     monkeypatch.setattr("src.database.SessionLocal", sessionmaker(bind=engine))
-    
+
     yield
-    
+
     # Cleanup
     if db_path.exists():
         db_path.unlink()
@@ -58,9 +57,14 @@ def runner() -> CliRunner:
 
 @pytest.fixture
 def sample_cv_pdf(tmp_path: Path) -> Path:
-    """Create a mock PDF file for testing."""
+    """Create a minimally valid PDF file for testing."""
+    from PyPDF2 import PdfWriter
+
     pdf = tmp_path / "resume.pdf"
-    pdf.write_text("%PDF-1.4 mock resume\nSUMMARY\nExperienced engineer.\nSKILLS\nPython, Docker")
+    writer = PdfWriter()
+    writer.add_blank_page(width=612, height=792)
+    with open(pdf, "wb") as f:
+        writer.write(f)
     return pdf
 
 
@@ -132,8 +136,8 @@ class TestAnalyzeCommand:
     ):
         """Analyze should process a CV end-to-end with mocked internals."""
         # Mock parse_cv
-        from src.utils.models import ParsedCV, ScoredCV, CVImprovement, ScoreDetail, ChangeDetail
-        
+        from src.utils.models import ChangeDetail, CVImprovement, ParsedCV, ScoredCV, ScoreDetail
+
         mock_parse.return_value = ParsedCV(
             raw_text="test",
             sections={"summary": "test", "experience": "test", "skills": "test"},
@@ -152,10 +156,10 @@ class TestAnalyzeCommand:
         )
 
         result = runner.invoke(cli, ["analyze", str(sample_cv_pdf)])
-        
+
         # Should succeed
         assert result.exit_code == 0
-        assert "Parsing" in result.output
+        assert "File: resume.pdf" in result.output
         assert mock_parse.called
         assert mock_score.called
         assert mock_improve.called
@@ -172,8 +176,8 @@ class TestAnalyzeCommand:
         sample_cv_pdf: Path,
     ):
         """Analyze should work with --user flag."""
-        from src.utils.models import ParsedCV, ScoredCV, CVImprovement
-        
+        from src.utils.models import CVImprovement, ParsedCV, ScoredCV
+
         mock_parse.return_value = ParsedCV(sections={"summary": "test"}, word_count=10)
         mock_score.return_value = ScoredCV()
         mock_improve.return_value = CVImprovement()
@@ -207,7 +211,7 @@ class TestSearchCommand:
     ):
         """Search should find and match jobs."""
         from src.utils.models import ParsedCV
-        
+
         mock_parse.return_value = ParsedCV(
             sections={"summary": "test"},
             skills=["python", "react"],
@@ -241,7 +245,7 @@ class TestSearchCommand:
             "--query", "software engineer",
             "--top-k", "3",
         ])
-        
+
         assert result.exit_code == 0
         assert mock_parse.called
         assert mock_search.called

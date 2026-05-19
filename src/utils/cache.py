@@ -17,8 +17,9 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from src.utils.logging import get_logger
 
@@ -29,7 +30,11 @@ class CacheManager:
     """Manages disk-based cache entries for AI responses."""
 
     def __init__(self, cache_dir: str | Path | None = None, enabled: bool = True) -> None:
-        self.cache_dir = Path(cache_dir) if cache_dir else Path(__file__).resolve().parent.parent.parent / "data" / "cache"
+        self.cache_dir = (
+            Path(cache_dir)
+            if cache_dir
+            else Path(__file__).resolve().parent.parent.parent / "data" / "cache"
+        )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.enabled = enabled
         self._hits = 0
@@ -59,7 +64,7 @@ class CacheManager:
             return None
 
         try:
-            with open(cache_file, "r", encoding="utf-8") as f:
+            with open(cache_file, encoding="utf-8") as f:
                 entry = json.load(f)
 
             # Check TTL expiry
@@ -172,6 +177,7 @@ def reset_cache_manager() -> None:
 
 # ── Decorator for caching AI calls ──────────────────────────────────────────
 
+
 def cached_ai_call(ttl: int = 86400) -> Callable:
     """Decorator that caches AI API responses.
 
@@ -192,6 +198,7 @@ def cached_ai_call(ttl: int = 86400) -> Callable:
     Returns:
         Decorated function with caching.
     """
+
     def decorator(func: Callable) -> Callable:
         def wrapper(*args: Any, **kwargs: Any) -> str:
             cache = get_cache_manager()
@@ -217,5 +224,7 @@ def cached_ai_call(ttl: int = 86400) -> Callable:
             cache.set(key, result, model=model, ttl=ttl)
 
             return result
+
         return wrapper
+
     return decorator

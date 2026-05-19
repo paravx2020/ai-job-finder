@@ -1,29 +1,35 @@
 #!/usr/bin/env python3
 """JobFinder — CLI entry point."""
 
-import sys
 import json
 from pathlib import Path
-from datetime import datetime
 
 import click
 
-from config import APP_NAME, APP_VERSION, AI_MODEL, DATA_DIR, CV_UPLOAD_DIR, EMAIL_SENDER, CONFIRM_BEFORE_SUBMIT
-from src.database import init_db, get_session, User, UserProfile, JobPosting, Application, CVImprovementLog, find_job_by_url
-from src.cv_processor.parser import parse_cv
-from src.cv_processor.scorer import score_cv
-from src.cv_processor.improver import improve_cv
-from src.job_scraper.engine import search_all
-from src.matcher.engine import match_jobs
+from config import AI_MODEL, APP_NAME, APP_VERSION, CV_UPLOAD_DIR, DATA_DIR, EMAIL_SENDER
 from src.auto_applier.applier import apply_to_job
-from src.notification import (
-    print_header,
-    print_job_results,
-    print_cv_score,
-    print_improvement_diff,
-    notify_application_status,
+from src.cv_processor import improver as cv_improver
+from src.cv_processor import parser as cv_parser
+from src.cv_processor import scorer as cv_scorer
+from src.database import (
+    Application,
+    CVImprovementLog,
+    JobPosting,
+    User,
+    UserProfile,
+    find_job_by_url,
+    get_session,
+    init_db,
 )
-from src.utils.exporter import export_results, build_analyze_export, build_search_export
+from src.notification import (
+    notify_application_status,
+    print_cv_score,
+    print_header,
+    print_improvement_diff,
+    print_job_results,
+    status_spinner,
+)
+from src.utils.exporter import build_analyze_export, build_search_export, export_results
 
 
 @click.group()
@@ -34,9 +40,11 @@ from src.utils.exporter import export_results, build_analyze_export, build_searc
 def cli(verbose: bool, quiet: bool, db_path: str | None):
     """JobFinder — AI-powered CV improvement and job matching."""
     from src.utils.logging import setup_logging
+
     setup_logging(verbose=verbose, quiet=quiet)
     if db_path:
         from config import settings
+
         settings.DB_PATH = db_path
     init_db()
 
@@ -44,10 +52,18 @@ def cli(verbose: bool, quiet: bool, db_path: str | None):
 @cli.command()
 @click.argument("cv_path", type=click.Path(exists=True))
 @click.option("--domain", default="software engineering", help="Target domain for improvements")
-@click.option("--format", "output_format", type=click.Choice(["text", "json", "pdf"]), default="text", help="Output format")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["text", "json", "pdf"]),
+    default="text",
+    help="Output format",
+)
 @click.option("--output", "-o", type=click.Path(), default=None, help="Write results to file")
 @click.option("--user", "user_email", default=None, help="User email (creates profile if new)")
-def analyze(cv_path: str, domain: str, output_format: str, output: str | None, user_email: str | None):
+def analyze(
+    cv_path: str, domain: str, output_format: str, output: str | None, user_email: str | None
+):
     """Parse, score, and improve a CV file."""
     path = Path(cv_path)
 
@@ -68,9 +84,8 @@ def analyze(cv_path: str, domain: str, output_format: str, output: str | None, u
         if domain == "software engineering" and user_profile.default_domain:
             domain = user_profile.default_domain
 
-    from src.notification.console_notifier import status_spinner
     with status_spinner("Parsing CV..."):
-        parsed = parse_cv(path)
+        parsed = cv_parser.parse_cv(path)
     click.echo(f"  File: {path.name}")
     click.echo(f"  Sections: {', '.join(parsed.sections.keys())}")
     click.echo(f"  Skills found: {len(parsed.skills)}")
@@ -78,12 +93,12 @@ def analyze(cv_path: str, domain: str, output_format: str, output: str | None, u
 
     print_header("Scoring CV")
     with status_spinner("Scoring CV..."):
-        score_data = score_cv(parsed)
+        score_data = cv_scorer.score_cv(parsed)
     print_cv_score(score_data)
 
     print_header("Improving CV")
     with status_spinner("Improving CV with AI..."):
-        improvement = improve_cv(parsed, domain=domain)
+        improvement = cv_improver.improve_cv(parsed, domain=domain)
     changes = improvement.changes
     if changes:
         print_improvement_diff(changes)
@@ -98,7 +113,9 @@ def analyze(cv_path: str, domain: str, output_format: str, output: str | None, u
     session = get_session()
     user_name = user_profile.name if user_profile else path.stem
     user_email_val = user_profile.email if user_profile else ""
-    user = User(name=user_name, email=user_email_val, raw_cv_path=str(path), parsed_cv=parsed.model_dump())
+    user = User(
+        name=user_name, email=user_email_val, raw_cv_path=str(path), parsed_cv=parsed.model_dump()
+    )
     session.add(user)
     for c in changes:
         section = c.section
@@ -117,19 +134,23 @@ def analyze(cv_path: str, domain: str, output_format: str, output: str | None, u
 
     # Handle export
     if output_format == "json" or (output and str(output).endswith(".json")):
-        export_data = build_analyze_export(parsed.model_dump(), score_data.model_dump(), improvement.model_dump())
+        export_data = build_analyze_export(
+            parsed.model_dump(), score_data.model_dump(), improvement.model_dump()
+        )
         export_path = output or f"{path.stem}_analysis.json"
         export_results(export_data, export_path, title="CV Analysis Report")
         click.echo(f"[green]Report exported to {export_path}[/green]")
     elif output_format == "pdf" or (output and str(output).endswith(".pdf")):
-        export_data = build_analyze_export(parsed.model_dump(), score_data.model_dump(), improvement.model_dump())
+        export_data = build_analyze_export(
+            parsed.model_dump(), score_data.model_dump(), improvement.model_dump()
+        )
         export_path = output or f"{path.stem}_analysis.pdf"
         export_results(export_data, export_path, title="CV Analysis Report")
         click.echo(f"[green]Report exported to {export_path}[/green]")
     elif output:
         # Plain text export
         with open(output, "w") as f:
-            f.write(f"JobFinder CV Analysis\n")
+            f.write("JobFinder CV Analysis\n")
             f.write(f"File: {path.name}\n")
             f.write(f"Domain: {domain}\n\n")
             f.write(f"Sections: {', '.join(parsed.sections.keys())}\n")
@@ -146,10 +167,24 @@ def analyze(cv_path: str, domain: str, output_format: str, output: str | None, u
 @click.option("--query", default=None, help="Job search query (default: from CV skills)")
 @click.option("--location", default="", help="Job location filter")
 @click.option("--top-k", default=5, help="Number of top matches to show")
-@click.option("--format", "output_format", type=click.Choice(["text", "json", "pdf"]), default="text", help="Output format")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["text", "json", "pdf"]),
+    default="text",
+    help="Output format",
+)
 @click.option("--output", "-o", type=click.Path(), default=None, help="Write results to file")
 @click.option("--user", "user_email", default=None, help="User email (creates profile if new)")
-def search(cv_path: str, query: str, location: str, top_k: int, output_format: str, output: str | None, user_email: str | None):
+def search(
+    cv_path: str,
+    query: str,
+    location: str,
+    top_k: int,
+    output_format: str,
+    output: str | None,
+    user_email: str | None,
+):
     """Parse CV and find matching jobs."""
     path = Path(cv_path)
 
@@ -170,7 +205,7 @@ def search(cv_path: str, query: str, location: str, top_k: int, output_format: s
             location = user_profile.default_location
 
     with status_spinner("Parsing CV..."):
-        parsed = parse_cv(path)
+        parsed = cv_parser.parse_cv(path)
 
     # Auto-derive query from CV skills
     if not query:
@@ -179,7 +214,9 @@ def search(cv_path: str, query: str, location: str, top_k: int, output_format: s
         click.echo(f"  Auto-query from skills: {query}")
 
     print_header(f"Searching Jobs: {query}")
-    jobs = search_all(query, location=location, max_per_source=25)
+    from src.job_scraper import engine as job_scraper_engine
+
+    jobs = job_scraper_engine.search_all(query, location=location, max_per_source=25)
     click.echo(f"  Found {len(jobs)} unique jobs")
 
     if not jobs:
@@ -188,7 +225,9 @@ def search(cv_path: str, query: str, location: str, top_k: int, output_format: s
 
     print_header("Matching Jobs to CV")
     with status_spinner("Matching jobs to CV..."):
-        matches = match_jobs(parsed, jobs, top_k=top_k)
+        from src.matcher import engine as matcher_engine
+
+        matches = matcher_engine.match_jobs(parsed, jobs, top_k=top_k)
     click.echo(f"  Top {len(matches)} matches:")
 
     if not matches:
@@ -232,12 +271,11 @@ def search(cv_path: str, query: str, location: str, top_k: int, output_format: s
     session.commit()
 
     # Save to file for the apply command
-    import json
     matches_file = DATA_DIR / "latest_matches.json"
     with open(matches_file, "w") as f:
         json.dump(matches, f, indent=2)
 
-    click.echo(f"\n  Matches saved. Run [bold]ai-job-finder apply[/bold] to submit applications.")
+    click.echo("\n  Matches saved. Run [bold]ai-job-finder apply[/bold] to submit applications.")
 
     # Handle export
     if output_format == "json" or (output and str(output).endswith(".json")):
@@ -252,7 +290,7 @@ def search(cv_path: str, query: str, location: str, top_k: int, output_format: s
         click.echo(f"[green]Report exported to {export_path}[/green]")
     elif output:
         with open(output, "w") as f:
-            f.write(f"JobFinder Search Results\n")
+            f.write("JobFinder Search Results\n")
             f.write(f"Query: {query}\n")
             f.write(f"Location: {location}\n")
             f.write(f"Matches: {len(matches)}\n\n")
@@ -272,7 +310,6 @@ def search(cv_path: str, query: str, location: str, top_k: int, output_format: s
 @click.option("--user", "user_email", default=None, help="User email for application")
 def apply(index: int, apply_all: bool, cv_path: str, cover_letter: str, user_email: str | None):
     """Apply to matched jobs."""
-    import json
 
     matches_file = DATA_DIR / "latest_matches.json"
     if not matches_file.exists():
@@ -320,16 +357,18 @@ def apply(index: int, apply_all: bool, cv_path: str, cover_letter: str, user_ema
         error = result.get("error", "")
 
         # Update DB
-        app = session.query(Application).join(JobPosting).filter(
-            JobPosting.url == job["url"]
-        ).first()
+        app = (
+            session.query(Application).join(JobPosting).filter(JobPosting.url == job["url"]).first()
+        )
         if app:
             app.status = status
             app.applied_at = __import__("datetime").datetime.utcnow()
             app.response = error
             session.commit()
 
-        click.echo(f"  Result: {'[green]Submitted[/green]' if result['success'] else f'[red]Failed: {error}[/red]'}")
+        click.echo(
+            f"  Result: {'[green]Submitted[/green]' if result['success'] else f'[red]Failed: {error}[/red]'}"
+        )
 
         if result["success"]:
             notify_application_status(job["title"], job["company"], status)
@@ -343,6 +382,7 @@ def apply(index: int, apply_all: bool, cv_path: str, cover_letter: str, user_ema
 def list_applications(status: str | None, limit: int):
     """List saved job applications."""
     from src.notification import print_header
+
     session = get_session()
     query = session.query(Application).join(JobPosting)
     if status:
@@ -355,8 +395,9 @@ def list_applications(status: str | None, limit: int):
         return
 
     print_header(f"Applications ({len(applications)})")
-    from rich.table import Table
     from rich.console import Console
+    from rich.table import Table
+
     console = Console()
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("#", style="dim")
@@ -389,9 +430,11 @@ def list_applications(status: str | None, limit: int):
 @cli.command()
 def stats():
     """Show summary statistics."""
-    from src.notification import print_header
-    from rich.table import Table
     from rich.console import Console
+    from rich.table import Table
+
+    from src.notification import print_header
+
     console = Console()
 
     session = get_session()
@@ -402,13 +445,17 @@ def stats():
     failed = session.query(Application).filter_by(status="failed").count()
 
     # Average match score
-    avg_score = session.query(Application.match_score).filter(
-        Application.match_score.isnot(None)
-    ).first()
+    avg_score = (
+        session.query(Application.match_score).filter(Application.match_score.isnot(None)).first()
+    )
     avg_score_val = avg_score[0] if avg_score and avg_score[0] else 0
 
     # Sources breakdown
-    sources = session.query(JobPosting.source, __import__("sqlalchemy").func.count(JobPosting.id)).group_by(JobPosting.source).all()
+    sources = (
+        session.query(JobPosting.source, __import__("sqlalchemy").func.count(JobPosting.id))
+        .group_by(JobPosting.source)
+        .all()
+    )
 
     print_header("Statistics")
     table = Table(show_header=True, header_style="bold cyan")
@@ -440,7 +487,9 @@ def stats():
 @click.option("--phone", default=None, help="User's phone number")
 @click.option("--domain", default=None, help="Default job domain")
 @click.option("--location", default=None, help="Default job location")
-def profile(email: str | None, name: str | None, phone: str | None, domain: str | None, location: str | None):
+def profile(
+    email: str | None, name: str | None, phone: str | None, domain: str | None, location: str | None
+):
     """Manage user profiles.
 
     Without arguments, shows the current profile.
@@ -452,10 +501,13 @@ def profile(email: str | None, name: str | None, phone: str | None, domain: str 
         # Show existing profiles
         profiles = session.query(UserProfile).all()
         if not profiles:
-            click.echo("No user profiles found. Create one with: ai-job-finder profile you@example.com")
+            click.echo(
+                "No user profiles found. Create one with: ai-job-finder profile you@example.com"
+            )
         else:
-            from rich.table import Table
             from rich.console import Console
+            from rich.table import Table
+
             console = Console()
             table = Table(show_header=True, header_style="bold cyan")
             table.add_column("Email")

@@ -23,12 +23,44 @@ logger = get_logger(__name__)
 
 # Default minimal skill set if taxonomy file is missing
 _FALLBACK_SKILLS = {
-    "python", "java", "javascript", "typescript", "c++", "c", "go", "rust",
-    "ruby", "php", "sql", "html", "css", "react", "angular", "vue",
-    "node.js", "django", "flask", "spring", "rails", "docker",
-    "kubernetes", "aws", "git", "linux", "agile", "scrum",
-    "machine learning", "data analysis", "tensorflow", "pytorch",
-    "pandas", "numpy", "postgresql", "mysql", "mongodb", "redis",
+    "python",
+    "java",
+    "javascript",
+    "typescript",
+    "c++",
+    "c",
+    "go",
+    "rust",
+    "ruby",
+    "php",
+    "sql",
+    "html",
+    "css",
+    "react",
+    "angular",
+    "vue",
+    "node.js",
+    "django",
+    "flask",
+    "spring",
+    "rails",
+    "docker",
+    "kubernetes",
+    "aws",
+    "git",
+    "linux",
+    "agile",
+    "scrum",
+    "machine learning",
+    "data analysis",
+    "tensorflow",
+    "pytorch",
+    "pandas",
+    "numpy",
+    "postgresql",
+    "mysql",
+    "mongodb",
+    "redis",
 }
 
 
@@ -45,7 +77,7 @@ def load_taxonomy(path: str | Path | None = None) -> dict[str, Any]:
         path = Path(__file__).resolve().parent.parent.parent / "data" / "skills_taxonomy.json"
 
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             taxonomy = json.load(f)
         logger.info("Loaded skills taxonomy from %s", path)
         return taxonomy
@@ -60,7 +92,9 @@ def load_taxonomy(path: str | Path | None = None) -> dict[str, Any]:
 def _build_fallback_taxonomy() -> dict[str, Any]:
     """Build a minimal taxonomy from the fallback skill set."""
     return {
-        "programming_languages": {skill: {"aliases": [], "related": []} for skill in _FALLBACK_SKILLS},
+        "programming_languages": {
+            skill: {"aliases": [], "related": []} for skill in _FALLBACK_SKILLS
+        },
     }
 
 

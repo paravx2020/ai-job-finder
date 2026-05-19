@@ -1,20 +1,21 @@
 """Email notification system."""
 
 import smtplib
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from typing import Optional
+from email.mime.text import MIMEText
 
-from config import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECEIVER, SMTP_SERVER, SMTP_PORT
+from config import EMAIL_PASSWORD, EMAIL_RECEIVER, EMAIL_SENDER, SMTP_PORT, SMTP_SERVER
 from src.utils.logging import get_logger
+
 logger = get_logger(__name__)
+
 
 def send_email(
     subject: str,
     body: str,
-    to: Optional[str] = None,
-    sender: Optional[str] = None,
-    password: Optional[str] = None,
+    to: str | None = None,
+    sender: str | None = None,
+    password: str | None = None,
 ) -> bool:
     """Send an email notification. Returns True on success."""
     to = to or EMAIL_RECEIVER
