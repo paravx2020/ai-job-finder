@@ -2,7 +2,6 @@
 
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
 
 from config import EMBEDDING_MODEL, MATCH_TOP_K, SIMILARITY_THRESHOLD
 from src.utils.models import ParsedCV
@@ -13,6 +12,8 @@ _model = None
 def _get_model():
     global _model
     if _model is None:
+        from sentence_transformers import SentenceTransformer
+
         _model = SentenceTransformer(EMBEDDING_MODEL)
     return _model
 
