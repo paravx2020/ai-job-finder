@@ -69,3 +69,6 @@ ai-job-finder/
 - **No official LinkedIn API** — scraping is the only option
 - **spaCy model required**: `python -m spacy download en_core_web_sm`
 - **Playwright browsers required**: `playwright install chromium`
+
+## Need to Address
+- Branch protection is temporarily relaxed on `main` so the repo owner can merge PRs without an additional reviewer. This should be restored to stricter enforcement after the repo has a second reviewer or collaborator.
