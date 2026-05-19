@@ -174,7 +174,7 @@ ai-job-finder/
 5. Make your changes
 6. Run tests: `pytest`
 7. Submit a pull request
-
+> New PR workflow: include one of `major`, `minor`, or `patch` in your pull request title or description to auto-apply the matching semantic label.
 ## ⚠️ Important Notes
 
 - **Scraping**: LinkedIn DOM changes frequently — update selectors in `config/scraper_selectors.json`
