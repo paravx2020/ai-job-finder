@@ -2,13 +2,14 @@
 
 import random
 import time
-from typing import Optional
 
 from playwright.sync_api import sync_playwright
 
-from config import SCRAPER_TIMEOUT, SCRAPER_DELAY, USER_AGENT
-from .base import BaseScraper, JobPosting, SelectorLoader, with_retry
+from config import SCRAPER_DELAY, SCRAPER_TIMEOUT, USER_AGENT
 from src.utils.logging import get_logger
+
+from .base import BaseScraper, JobPosting, with_retry
+
 logger = get_logger(__name__)
 
 class LinkedInScraper(BaseScraper):

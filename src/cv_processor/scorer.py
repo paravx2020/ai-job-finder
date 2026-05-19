@@ -1,9 +1,8 @@
 """Score CV quality across multiple dimensions."""
 
 import re
-from typing import Any
 
-from src.utils.models import ParsedCV, ScoreDetail, ScoredCV
+from src.utils.models import ParsedCV, ScoredCV, ScoreDetail
 
 ACTION_VERBS = {
     "achieved", "developed", "implemented", "designed", "led", "managed",

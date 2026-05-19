@@ -3,12 +3,15 @@
 from datetime import datetime
 from difflib import SequenceMatcher
 
-from src.database import session_scope, find_job_by_url, JobPosting as DBJobPosting
-from .base import JobPosting
-from .linkedin import LinkedInScraper
-from .indeed import IndeedScraper
-from .glassdoor import GlassdoorScraper
+from src.database import JobPosting as DBJobPosting
+from src.database import find_job_by_url, session_scope
 from src.utils.logging import get_logger
+
+from .base import JobPosting
+from .glassdoor import GlassdoorScraper
+from .indeed import IndeedScraper
+from .linkedin import LinkedInScraper
+
 logger = get_logger(__name__)
 
 def _similarity(a: str, b: str) -> float:

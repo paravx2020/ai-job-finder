@@ -1,12 +1,18 @@
 """Console-based notification using Rich."""
 
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
-from rich.markdown import Markdown
-from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TaskProgressColumn, TimeElapsedColumn
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
+from rich.table import Table
 
-from src.utils.models import ScoredCV, ChangeDetail
+from src.utils.models import ChangeDetail, ScoredCV
 
 console = Console()
 

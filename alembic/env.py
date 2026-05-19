@@ -6,7 +6,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 # Import the SQLAlchemy Base and models
-from src.database import Base  # noqa: E402
+from src.database import Base
 
 config = context.config
 

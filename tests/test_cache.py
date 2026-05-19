@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import time
 from pathlib import Path
 
 import pytest
 
-from src.utils.cache import CacheManager, get_cache_manager, reset_cache_manager
+from src.utils.cache import CacheManager, reset_cache_manager
 
 
 class TestCacheManager:

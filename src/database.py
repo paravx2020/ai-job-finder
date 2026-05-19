@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime
-from typing import Generator
 
 from sqlalchemy import (
-    Column, DateTime, Float, ForeignKey, Integer, JSON, String, Text, create_engine
+    JSON,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    create_engine,
 )
 from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
 
@@ -18,17 +26,17 @@ Base = declarative_base()
 SessionLocal = sessionmaker(bind=engine)
 
 __all__ = [
-    "Base",
-    "UserProfile",
-    "User",
-    "JobPosting",
     "Application",
+    "Base",
     "CVImprovementLog",
-    "init_db",
+    "JobPosting",
+    "User",
+    "UserProfile",
+    "find_job_by_url",
     "get_engine",
     "get_session",
+    "init_db",
     "session_scope",
-    "find_job_by_url",
 ]
 
 
@@ -174,8 +182,8 @@ def run_migrations() -> None:
     Falls back to init_db() if Alembic is not configured.
     """
     try:
-        from alembic.config import Config
         from alembic import command
+        from alembic.config import Config
 
         alembic_cfg = Config('alembic.ini')
         command.upgrade(alembic_cfg, 'head')

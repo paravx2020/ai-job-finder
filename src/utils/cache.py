@@ -17,8 +17,9 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from src.utils.logging import get_logger
 
@@ -59,7 +60,7 @@ class CacheManager:
             return None
 
         try:
-            with open(cache_file, "r", encoding="utf-8") as f:
+            with open(cache_file, encoding="utf-8") as f:
                 entry = json.load(f)
 
             # Check TTL expiry

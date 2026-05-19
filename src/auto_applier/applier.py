@@ -1,13 +1,13 @@
 """Automated job application submission using Playwright."""
 
-import time
 import random
-from typing import Optional
+import time
 
-from playwright.sync_api import sync_playwright, Page
+from playwright.sync_api import Page, sync_playwright
 
-from config import SCRAPER_TIMEOUT, USER_AGENT, CONFIRM_BEFORE_SUBMIT
+from config import CONFIRM_BEFORE_SUBMIT, SCRAPER_TIMEOUT, USER_AGENT
 from src.utils.logging import get_logger
+
 logger = get_logger(__name__)
 
 COMMON_FIELD_SELECTORS = {
@@ -25,7 +25,7 @@ COMMON_FIELD_SELECTORS = {
 }
 
 
-def _detect_field(page: Page, field_name: str) -> Optional[str]:
+def _detect_field(page: Page, field_name: str) -> str | None:
     """Find a field selector on the page."""
     for selector in COMMON_FIELD_SELECTORS.get(field_name, []):
         el = page.query_selector(selector)

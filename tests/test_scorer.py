@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from src.cv_processor.scorer import (
     score_cv,
 )

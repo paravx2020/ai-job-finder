@@ -1,12 +1,9 @@
 """AI-powered CV improvement using Gemini/OpenAI."""
 
-import json
-from typing import Optional
 
+from config import AI_MODEL, GEMINI_API_KEY, OPENAI_API_KEY
 from src.utils.cache import cached_ai_call
-from src.utils.models import CVImprovement, ChangeDetail, ParsedCV
-
-from config import GEMINI_API_KEY, OPENAI_API_KEY, AI_MODEL
+from src.utils.models import ChangeDetail, CVImprovement, ParsedCV
 
 # ── AI Client ────────────────────────────────────────────────────────────────
 

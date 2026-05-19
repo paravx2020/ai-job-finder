@@ -45,7 +45,7 @@ def load_taxonomy(path: str | Path | None = None) -> dict[str, Any]:
         path = Path(__file__).resolve().parent.parent.parent / "data" / "skills_taxonomy.json"
 
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             taxonomy = json.load(f)
         logger.info("Loaded skills taxonomy from %s", path)
         return taxonomy

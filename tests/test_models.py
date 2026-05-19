@@ -5,11 +5,10 @@ from __future__ import annotations
 from src.utils.models import (
     ChangeDetail,
     CVImprovement,
-    CVSection,
     MatchResult,
     ParsedCV,
-    ScoreDetail,
     ScoredCV,
+    ScoreDetail,
 )
 
 

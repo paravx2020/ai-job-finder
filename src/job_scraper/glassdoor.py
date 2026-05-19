@@ -9,8 +9,10 @@ from urllib.parse import quote
 from playwright.sync_api import sync_playwright
 
 from config import SCRAPER_DELAY, SCRAPER_TIMEOUT, USER_AGENT
-from .base import BaseScraper, JobPosting, with_retry
 from src.utils.logging import get_logger
+
+from .base import BaseScraper, JobPosting, with_retry
+
 logger = get_logger(__name__)
 
 class GlassdoorScraper(BaseScraper):
