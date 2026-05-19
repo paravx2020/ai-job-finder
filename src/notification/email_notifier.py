@@ -9,6 +9,7 @@ from src.utils.logging import get_logger
 
 logger = get_logger(__name__)
 
+
 def send_email(
     subject: str,
     body: str,

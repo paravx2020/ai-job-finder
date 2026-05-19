@@ -12,6 +12,7 @@ from .base import BaseScraper, JobPosting, with_retry
 
 logger = get_logger(__name__)
 
+
 class LinkedInScraper(BaseScraper):
     def source_name(self) -> str:
         return "linkedin"
@@ -38,12 +39,20 @@ class LinkedInScraper(BaseScraper):
                     page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
                     time.sleep(random.uniform(1, 2))
 
-                job_cards = page.query_selector_all(self.selectors.get("job_card", ".job-card-container"))
+                job_cards = page.query_selector_all(
+                    self.selectors.get("job_card", ".job-card-container")
+                )
                 for card in job_cards[:max_results]:
                     try:
-                        title_el = card.query_selector(self.selectors.get("title", ".job-card-list__title"))
-                        company_el = card.query_selector(self.selectors.get("company", ".job-card-container__company-name"))
-                        location_el = card.query_selector(self.selectors.get("location", ".job-card-container__metadata-item"))
+                        title_el = card.query_selector(
+                            self.selectors.get("title", ".job-card-list__title")
+                        )
+                        company_el = card.query_selector(
+                            self.selectors.get("company", ".job-card-container__company-name")
+                        )
+                        location_el = card.query_selector(
+                            self.selectors.get("location", ".job-card-container__metadata-item")
+                        )
                         url_el = card.query_selector(self.selectors.get("title_link", "a"))
 
                         title = title_el.inner_text().strip() if title_el else ""
@@ -55,18 +64,22 @@ class LinkedInScraper(BaseScraper):
                         if card:
                             card.click()
                             time.sleep(1)
-                            desc_el = page.query_selector(self.selectors.get("description", ".show-more-less-html__markup"))
+                            desc_el = page.query_selector(
+                                self.selectors.get("description", ".show-more-less-html__markup")
+                            )
                             desc = desc_el.inner_text().strip() if desc_el else ""
 
                         if title and company:
-                            jobs.append(JobPosting(
-                                title=title,
-                                company=company,
-                                description=desc,
-                                url=url or search_url,
-                                source=self.source_name(),
-                                location=loc,
-                            ))
+                            jobs.append(
+                                JobPosting(
+                                    title=title,
+                                    company=company,
+                                    description=desc,
+                                    url=url or search_url,
+                                    source=self.source_name(),
+                                    location=loc,
+                                )
+                            )
                     except Exception:
                         continue
 

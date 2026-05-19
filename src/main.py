@@ -40,9 +40,11 @@ from src.utils.exporter import build_analyze_export, build_search_export, export
 def cli(verbose: bool, quiet: bool, db_path: str | None):
     """JobFinder — AI-powered CV improvement and job matching."""
     from src.utils.logging import setup_logging
+
     setup_logging(verbose=verbose, quiet=quiet)
     if db_path:
         from config import settings
+
         settings.DB_PATH = db_path
     init_db()
 
@@ -50,10 +52,18 @@ def cli(verbose: bool, quiet: bool, db_path: str | None):
 @cli.command()
 @click.argument("cv_path", type=click.Path(exists=True))
 @click.option("--domain", default="software engineering", help="Target domain for improvements")
-@click.option("--format", "output_format", type=click.Choice(["text", "json", "pdf"]), default="text", help="Output format")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["text", "json", "pdf"]),
+    default="text",
+    help="Output format",
+)
 @click.option("--output", "-o", type=click.Path(), default=None, help="Write results to file")
 @click.option("--user", "user_email", default=None, help="User email (creates profile if new)")
-def analyze(cv_path: str, domain: str, output_format: str, output: str | None, user_email: str | None):
+def analyze(
+    cv_path: str, domain: str, output_format: str, output: str | None, user_email: str | None
+):
     """Parse, score, and improve a CV file."""
     path = Path(cv_path)
 
@@ -103,7 +113,9 @@ def analyze(cv_path: str, domain: str, output_format: str, output: str | None, u
     session = get_session()
     user_name = user_profile.name if user_profile else path.stem
     user_email_val = user_profile.email if user_profile else ""
-    user = User(name=user_name, email=user_email_val, raw_cv_path=str(path), parsed_cv=parsed.model_dump())
+    user = User(
+        name=user_name, email=user_email_val, raw_cv_path=str(path), parsed_cv=parsed.model_dump()
+    )
     session.add(user)
     for c in changes:
         section = c.section
@@ -122,12 +134,16 @@ def analyze(cv_path: str, domain: str, output_format: str, output: str | None, u
 
     # Handle export
     if output_format == "json" or (output and str(output).endswith(".json")):
-        export_data = build_analyze_export(parsed.model_dump(), score_data.model_dump(), improvement.model_dump())
+        export_data = build_analyze_export(
+            parsed.model_dump(), score_data.model_dump(), improvement.model_dump()
+        )
         export_path = output or f"{path.stem}_analysis.json"
         export_results(export_data, export_path, title="CV Analysis Report")
         click.echo(f"[green]Report exported to {export_path}[/green]")
     elif output_format == "pdf" or (output and str(output).endswith(".pdf")):
-        export_data = build_analyze_export(parsed.model_dump(), score_data.model_dump(), improvement.model_dump())
+        export_data = build_analyze_export(
+            parsed.model_dump(), score_data.model_dump(), improvement.model_dump()
+        )
         export_path = output or f"{path.stem}_analysis.pdf"
         export_results(export_data, export_path, title="CV Analysis Report")
         click.echo(f"[green]Report exported to {export_path}[/green]")
@@ -151,10 +167,24 @@ def analyze(cv_path: str, domain: str, output_format: str, output: str | None, u
 @click.option("--query", default=None, help="Job search query (default: from CV skills)")
 @click.option("--location", default="", help="Job location filter")
 @click.option("--top-k", default=5, help="Number of top matches to show")
-@click.option("--format", "output_format", type=click.Choice(["text", "json", "pdf"]), default="text", help="Output format")
+@click.option(
+    "--format",
+    "output_format",
+    type=click.Choice(["text", "json", "pdf"]),
+    default="text",
+    help="Output format",
+)
 @click.option("--output", "-o", type=click.Path(), default=None, help="Write results to file")
 @click.option("--user", "user_email", default=None, help="User email (creates profile if new)")
-def search(cv_path: str, query: str, location: str, top_k: int, output_format: str, output: str | None, user_email: str | None):
+def search(
+    cv_path: str,
+    query: str,
+    location: str,
+    top_k: int,
+    output_format: str,
+    output: str | None,
+    user_email: str | None,
+):
     """Parse CV and find matching jobs."""
     path = Path(cv_path)
 
@@ -327,16 +357,18 @@ def apply(index: int, apply_all: bool, cv_path: str, cover_letter: str, user_ema
         error = result.get("error", "")
 
         # Update DB
-        app = session.query(Application).join(JobPosting).filter(
-            JobPosting.url == job["url"]
-        ).first()
+        app = (
+            session.query(Application).join(JobPosting).filter(JobPosting.url == job["url"]).first()
+        )
         if app:
             app.status = status
             app.applied_at = __import__("datetime").datetime.utcnow()
             app.response = error
             session.commit()
 
-        click.echo(f"  Result: {'[green]Submitted[/green]' if result['success'] else f'[red]Failed: {error}[/red]'}")
+        click.echo(
+            f"  Result: {'[green]Submitted[/green]' if result['success'] else f'[red]Failed: {error}[/red]'}"
+        )
 
         if result["success"]:
             notify_application_status(job["title"], job["company"], status)
@@ -350,6 +382,7 @@ def apply(index: int, apply_all: bool, cv_path: str, cover_letter: str, user_ema
 def list_applications(status: str | None, limit: int):
     """List saved job applications."""
     from src.notification import print_header
+
     session = get_session()
     query = session.query(Application).join(JobPosting)
     if status:
@@ -364,6 +397,7 @@ def list_applications(status: str | None, limit: int):
     print_header(f"Applications ({len(applications)})")
     from rich.console import Console
     from rich.table import Table
+
     console = Console()
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("#", style="dim")
@@ -400,6 +434,7 @@ def stats():
     from rich.table import Table
 
     from src.notification import print_header
+
     console = Console()
 
     session = get_session()
@@ -410,13 +445,17 @@ def stats():
     failed = session.query(Application).filter_by(status="failed").count()
 
     # Average match score
-    avg_score = session.query(Application.match_score).filter(
-        Application.match_score.isnot(None)
-    ).first()
+    avg_score = (
+        session.query(Application.match_score).filter(Application.match_score.isnot(None)).first()
+    )
     avg_score_val = avg_score[0] if avg_score and avg_score[0] else 0
 
     # Sources breakdown
-    sources = session.query(JobPosting.source, __import__("sqlalchemy").func.count(JobPosting.id)).group_by(JobPosting.source).all()
+    sources = (
+        session.query(JobPosting.source, __import__("sqlalchemy").func.count(JobPosting.id))
+        .group_by(JobPosting.source)
+        .all()
+    )
 
     print_header("Statistics")
     table = Table(show_header=True, header_style="bold cyan")
@@ -448,7 +487,9 @@ def stats():
 @click.option("--phone", default=None, help="User's phone number")
 @click.option("--domain", default=None, help="Default job domain")
 @click.option("--location", default=None, help="Default job location")
-def profile(email: str | None, name: str | None, phone: str | None, domain: str | None, location: str | None):
+def profile(
+    email: str | None, name: str | None, phone: str | None, domain: str | None, location: str | None
+):
     """Manage user profiles.
 
     Without arguments, shows the current profile.
@@ -460,10 +501,13 @@ def profile(email: str | None, name: str | None, phone: str | None, domain: str 
         # Show existing profiles
         profiles = session.query(UserProfile).all()
         if not profiles:
-            click.echo("No user profiles found. Create one with: ai-job-finder profile you@example.com")
+            click.echo(
+                "No user profiles found. Create one with: ai-job-finder profile you@example.com"
+            )
         else:
             from rich.console import Console
             from rich.table import Table
+
             console = Console()
             table = Table(show_header=True, header_style="bold cyan")
             table.add_column("Email")

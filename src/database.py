@@ -42,8 +42,10 @@ __all__ = [
 
 # ── Models ──────────────────────────────────────────────────────────────────
 
+
 class UserProfile(Base):
     """User profile with preferences and contact info."""
+
     __tablename__ = "user_profiles"
     id = Column(Integer, primary_key=True)
     email = Column(String(255), unique=True, nullable=False)
@@ -62,7 +64,7 @@ class User(Base):
     name = Column(String(255))
     email = Column(String(255), unique=True)
     raw_cv_path = Column(String(500))
-    parsed_cv = Column(JSON)          # structured CV data
+    parsed_cv = Column(JSON)  # structured CV data
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -70,7 +72,7 @@ class User(Base):
 class JobPosting(Base):
     __tablename__ = "job_postings"
     id = Column(Integer, primary_key=True)
-    source = Column(String(50))        # linkedin, indeed, glassdoor
+    source = Column(String(50))  # linkedin, indeed, glassdoor
     title = Column(String(255))
     company = Column(String(255))
     description = Column(Text)
@@ -108,6 +110,7 @@ class CVImprovementLog(Base):
 
 
 # ── Database Functions ──────────────────────────────────────────────────────
+
 
 def init_db() -> None:
     """Create all tables if they don't exist.
@@ -163,7 +166,6 @@ def get_session() -> Session:
     return SessionLocal()
 
 
-
 def find_job_by_url(session, url: str):
     """Find an existing job posting by URL.
 
@@ -176,6 +178,7 @@ def find_job_by_url(session, url: str):
     """
     return session.query(JobPosting).filter(JobPosting.url == url).first()
 
+
 def run_migrations() -> None:
     """Run Alembic migrations to bring the database to the latest schema.
 
@@ -185,8 +188,8 @@ def run_migrations() -> None:
         from alembic import command
         from alembic.config import Config
 
-        alembic_cfg = Config('alembic.ini')
-        command.upgrade(alembic_cfg, 'head')
+        alembic_cfg = Config("alembic.ini")
+        command.upgrade(alembic_cfg, "head")
     except Exception:
         # Fallback: create tables directly if Alembic fails
         init_db()

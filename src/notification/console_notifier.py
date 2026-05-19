@@ -44,13 +44,15 @@ def print_job_results(results: list[dict]):
 
     for i, r in enumerate(results, 1):
         reason = r.get("reason", "")
-        console.print(Panel(
-            f"[bold]{i}. {r['job']['title']}[/bold] @ {r['job']['company']}\n"
-            f"   Match: [green]{r['match_percentage']}[/green] | "
-            f"   URL: [blue]{r['job']['url']}[/blue]\n"
-            f"   [dim]{reason}[/dim]",
-            title=f"Match #{i}",
-        ))
+        console.print(
+            Panel(
+                f"[bold]{i}. {r['job']['title']}[/bold] @ {r['job']['company']}\n"
+                f"   Match: [green]{r['match_percentage']}[/green] | "
+                f"   URL: [blue]{r['job']['url']}[/blue]\n"
+                f"   [dim]{reason}[/dim]",
+                title=f"Match #{i}",
+            )
+        )
 
 
 def print_cv_score(score_data: ScoredCV):
@@ -73,9 +75,7 @@ def print_cv_score(score_data: ScoredCV):
 
 def print_improvement_diff(changes: list[ChangeDetail]):
     for c in changes:
-        console.print(
-            f"  • {c.section}: {c.original_length} → {c.new_length} chars"
-        )
+        console.print(f"  • {c.section}: {c.original_length} → {c.new_length} chars")
 
 
 def create_progress() -> Progress:

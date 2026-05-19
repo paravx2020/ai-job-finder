@@ -14,6 +14,7 @@ from .linkedin import LinkedInScraper
 
 logger = get_logger(__name__)
 
+
 def _similarity(a: str, b: str) -> float:
     return SequenceMatcher(None, a.lower(), b.lower()).ratio()
 
@@ -50,9 +51,15 @@ def search_all(query: str, location: str = "", max_per_source: int = 25) -> list
             try:
                 results = scraper.search(query, location, max_results=max_per_source)
                 all_jobs.extend(results)
-                progress.update(task, description=f"  [green]{source_name}[/green] — {len(results)} jobs", completed=1)
+                progress.update(
+                    task,
+                    description=f"  [green]{source_name}[/green] — {len(results)} jobs",
+                    completed=1,
+                )
             except Exception as e:
-                progress.update(task, description=f"  [red]{source_name}[/red] — error: {e}", completed=1)
+                progress.update(
+                    task, description=f"  [red]{source_name}[/red] — error: {e}", completed=1
+                )
             progress.advance(overall)
 
     unique_jobs = deduplicate(all_jobs)

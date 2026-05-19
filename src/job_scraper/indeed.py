@@ -13,6 +13,7 @@ from .base import BaseScraper, JobPosting, with_retry
 
 logger = get_logger(__name__)
 
+
 class IndeedScraper(BaseScraper):
     def source_name(self) -> str:
         return "indeed"
@@ -26,10 +27,7 @@ class IndeedScraper(BaseScraper):
                 context = browser.new_context(user_agent=USER_AGENT)
                 page = context.new_page()
 
-                url = (
-                    f"https://www.indeed.com/jobs?"
-                    f"q={quote(query)}&l={quote(location)}"
-                )
+                url = f"https://www.indeed.com/jobs?" f"q={quote(query)}&l={quote(location)}"
                 page.goto(url, timeout=SCRAPER_TIMEOUT)
                 time.sleep(random.uniform(*SCRAPER_DELAY))
 
@@ -37,12 +35,24 @@ class IndeedScraper(BaseScraper):
                 for card in cards[:max_results]:
                     try:
                         title_el = card.query_selector(self.selectors.get("title", "h2.jobTitle a"))
-                        company_el = card.query_selector(self.selectors.get("company", "[data-testid='companyName']"))
-                        location_el = card.query_selector(self.selectors.get("location", "[data-testid='text-location']"))
-                        salary_el = card.query_selector(self.selectors.get("salary", "[data-testid='attribute_snippet_testid']"))
-                        desc_el = card.query_selector(self.selectors.get("description", ".job-snippet"))
+                        company_el = card.query_selector(
+                            self.selectors.get("company", "[data-testid='companyName']")
+                        )
+                        location_el = card.query_selector(
+                            self.selectors.get("location", "[data-testid='text-location']")
+                        )
+                        salary_el = card.query_selector(
+                            self.selectors.get("salary", "[data-testid='attribute_snippet_testid']")
+                        )
+                        desc_el = card.query_selector(
+                            self.selectors.get("description", ".job-snippet")
+                        )
 
-                        title = title_el.get_attribute("title") or title_el.inner_text().strip() if title_el else ""
+                        title = (
+                            title_el.get_attribute("title") or title_el.inner_text().strip()
+                            if title_el
+                            else ""
+                        )
                         href = title_el.get_attribute("href") if title_el else ""
                         company = company_el.inner_text().strip() if company_el else ""
                         loc = location_el.inner_text().strip() if location_el else location
@@ -50,15 +60,17 @@ class IndeedScraper(BaseScraper):
                         desc = desc_el.inner_text().strip() if desc_el else ""
 
                         if title and company:
-                            jobs.append(JobPosting(
-                                title=title,
-                                company=company,
-                                description=desc,
-                                url=f"https://www.indeed.com{href}" if href else url,
-                                source=self.source_name(),
-                                location=loc,
-                                salary=salary,
-                            ))
+                            jobs.append(
+                                JobPosting(
+                                    title=title,
+                                    company=company,
+                                    description=desc,
+                                    url=f"https://www.indeed.com{href}" if href else url,
+                                    source=self.source_name(),
+                                    location=loc,
+                                    salary=salary,
+                                )
+                            )
                     except Exception:
                         continue
 

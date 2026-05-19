@@ -26,6 +26,7 @@ logger = get_logger(__name__)
 
 class CaptchaType(str, Enum):
     """Types of CAPTCHA challenges."""
+
     RECAPTCHA = "recaptcha"
     HCAPTCHA = "hcaptcha"
     CLOUDFLARE = "cloudflare"
@@ -125,7 +126,9 @@ class PageDetector:
         # Method 3: Check URL for challenge indicators
         try:
             url = page.url.lower()
-            if any(indicator in url for indicator in ["challenge", "captcha", "verify", "turnstile"]):
+            if any(
+                indicator in url for indicator in ["challenge", "captcha", "verify", "turnstile"]
+            ):
                 logger.warning("CAPTCHA detected via URL pattern: %s", url)
                 return {
                     "detected": True,
@@ -148,8 +151,14 @@ class PageDetector:
             True if a login wall is detected.
         """
         login_indicators = [
-            "sign in", "log in", "login", "sign up", "register",
-            "create account", "please log in", "authentication required",
+            "sign in",
+            "log in",
+            "login",
+            "sign up",
+            "register",
+            "create account",
+            "please log in",
+            "authentication required",
         ]
 
         login_selectors = [
@@ -198,8 +207,12 @@ class PageDetector:
             url = page.url.lower()
 
             rate_limit_indicators = [
-                "too many requests", "rate limit", "rate-limited",
-                "slow down", "try again later", "429",
+                "too many requests",
+                "rate limit",
+                "rate-limited",
+                "slow down",
+                "try again later",
+                "429",
             ]
 
             for indicator in rate_limit_indicators:

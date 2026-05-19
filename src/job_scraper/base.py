@@ -18,7 +18,9 @@ class SelectorLoader:
     @classmethod
     def load(cls, source: str) -> dict[str, str]:
         if cls._selectors is None:
-            config_path = Path(__file__).resolve().parent.parent.parent / "config" / "scraper_selectors.json"
+            config_path = (
+                Path(__file__).resolve().parent.parent.parent / "config" / "scraper_selectors.json"
+            )
             with open(config_path, encoding="utf-8") as f:
                 cls._selectors = cast(dict[str, dict[str, str]], json.load(f))
         return cls._selectors.get(source, {})
@@ -26,6 +28,7 @@ class SelectorLoader:
 
 def with_retry(max_retries: int = 3, backoff_base: float = 2.0):
     """Decorator: retry with exponential backoff on exceptions."""
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             last_error: Exception | None = None
@@ -35,11 +38,13 @@ def with_retry(max_retries: int = 3, backoff_base: float = 2.0):
                 except Exception as e:
                     last_error = e
                     if attempt < max_retries - 1:
-                        delay = backoff_base ** attempt + random.uniform(0, 1)
+                        delay = backoff_base**attempt + random.uniform(0, 1)
                         time.sleep(delay)
             assert last_error is not None
             raise last_error
+
         return wrapper
+
     return decorator
 
 

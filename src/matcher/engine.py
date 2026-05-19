@@ -68,19 +68,21 @@ def match_jobs(
     results = []
     for score, idx in ranked:
         job = jobs[idx]
-        results.append({
-            "job": {
-                "title": job.title,
-                "company": job.company,
-                "url": job.url,
-                "location": job.location,
-                "salary": job.salary,
-                "source": job.source,
-            },
-            "match_score": round(float(score), 3),
-            "match_percentage": f"{round(score * 100, 1)}%",
-            "reason": _generate_reason(parsed_cv, job, score),
-        })
+        results.append(
+            {
+                "job": {
+                    "title": job.title,
+                    "company": job.company,
+                    "url": job.url,
+                    "location": job.location,
+                    "salary": job.salary,
+                    "source": job.source,
+                },
+                "match_score": round(float(score), 3),
+                "match_percentage": f"{round(score * 100, 1)}%",
+                "reason": _generate_reason(parsed_cv, job, score),
+            }
+        )
 
     return results
 

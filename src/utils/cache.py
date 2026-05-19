@@ -30,7 +30,11 @@ class CacheManager:
     """Manages disk-based cache entries for AI responses."""
 
     def __init__(self, cache_dir: str | Path | None = None, enabled: bool = True) -> None:
-        self.cache_dir = Path(cache_dir) if cache_dir else Path(__file__).resolve().parent.parent.parent / "data" / "cache"
+        self.cache_dir = (
+            Path(cache_dir)
+            if cache_dir
+            else Path(__file__).resolve().parent.parent.parent / "data" / "cache"
+        )
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.enabled = enabled
         self._hits = 0
@@ -173,6 +177,7 @@ def reset_cache_manager() -> None:
 
 # ── Decorator for caching AI calls ──────────────────────────────────────────
 
+
 def cached_ai_call(ttl: int = 86400) -> Callable:
     """Decorator that caches AI API responses.
 
@@ -193,6 +198,7 @@ def cached_ai_call(ttl: int = 86400) -> Callable:
     Returns:
         Decorated function with caching.
     """
+
     def decorator(func: Callable) -> Callable:
         def wrapper(*args: Any, **kwargs: Any) -> str:
             cache = get_cache_manager()
@@ -218,5 +224,7 @@ def cached_ai_call(ttl: int = 86400) -> Callable:
             cache.set(key, result, model=model, ttl=ttl)
 
             return result
+
         return wrapper
+
     return decorator
