@@ -7,20 +7,20 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import cast
 
 
 class SelectorLoader:
     """Loads CSS selectors from config/scraper_selectors.json."""
 
-    _selectors: dict | None = None
+    _selectors: dict[str, dict[str, str]] | None = None
 
     @classmethod
     def load(cls, source: str) -> dict[str, str]:
         if cls._selectors is None:
             config_path = Path(__file__).resolve().parent.parent.parent / "config" / "scraper_selectors.json"
-            with open(config_path, "r", encoding="utf-8") as f:
-                cls._selectors = json.load(f)
+            with open(config_path, encoding="utf-8") as f:
+                cls._selectors = cast(dict[str, dict[str, str]], json.load(f))
         return cls._selectors.get(source, {})
 
 
@@ -28,7 +28,7 @@ def with_retry(max_retries: int = 3, backoff_base: float = 2.0):
     """Decorator: retry with exponential backoff on exceptions."""
     def decorator(func):
         def wrapper(*args, **kwargs):
-            last_error = None
+            last_error: Exception | None = None
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
@@ -37,6 +37,7 @@ def with_retry(max_retries: int = 3, backoff_base: float = 2.0):
                     if attempt < max_retries - 1:
                         delay = backoff_base ** attempt + random.uniform(0, 1)
                         time.sleep(delay)
+            assert last_error is not None
             raise last_error
         return wrapper
     return decorator
@@ -49,9 +50,9 @@ class JobPosting:
     description: str
     url: str
     source: str
-    salary: Optional[str] = None
-    location: Optional[str] = None
-    posted_date: Optional[datetime] = None
+    salary: str | None = None
+    location: str | None = None
+    posted_date: datetime | None = None
     raw_data: dict = field(default_factory=dict)
 
 
