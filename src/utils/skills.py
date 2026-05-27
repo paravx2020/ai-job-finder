@@ -21,6 +21,9 @@ from src.utils.logging import get_logger
 
 logger = get_logger(__name__)
 
+# Module-level cache — loaded once, reused across all callers
+_taxonomy_cache: dict[str, Any] | None = None
+
 # Default minimal skill set if taxonomy file is missing
 _FALLBACK_SKILLS = {
     "python",
@@ -65,7 +68,7 @@ _FALLBACK_SKILLS = {
 
 
 def load_taxonomy(path: str | Path | None = None) -> dict[str, Any]:
-    """Load the skills taxonomy from JSON file.
+    """Load the skills taxonomy from JSON file (cached after first read).
 
     Args:
         path: Path to the taxonomy JSON file. Defaults to data/skills_taxonomy.json.
@@ -73,6 +76,10 @@ def load_taxonomy(path: str | Path | None = None) -> dict[str, Any]:
     Returns:
         Dictionary mapping category names to skill definitions.
     """
+    global _taxonomy_cache
+    if _taxonomy_cache is not None and path is None:
+        return _taxonomy_cache
+
     if path is None:
         path = Path(__file__).resolve().parent.parent.parent / "data" / "skills_taxonomy.json"
 
@@ -80,6 +87,8 @@ def load_taxonomy(path: str | Path | None = None) -> dict[str, Any]:
         with open(path, encoding="utf-8") as f:
             taxonomy = json.load(f)
         logger.info("Loaded skills taxonomy from %s", path)
+        if path is None or str(path).endswith("skills_taxonomy.json"):
+            _taxonomy_cache = taxonomy
         return taxonomy
     except FileNotFoundError:
         logger.warning("Skills taxonomy not found at %s, using fallback set", path)

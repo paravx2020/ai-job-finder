@@ -111,8 +111,12 @@ def analyze(
 
     # Save to DB
     session = get_session()
-    user_name = user_profile.name if user_profile else path.stem
-    user_email_val = user_profile.email if user_profile else ""
+    if user_profile:
+        user_name = user_profile.name
+        user_email_val = user_profile.email
+    else:
+        user_name = path.stem
+        user_email_val = f"anon_{path.stem}@local"
     user = User(
         name=user_name, email=user_email_val, raw_cv_path=str(path), parsed_cv=parsed.model_dump()
     )
@@ -240,7 +244,7 @@ def search(
     session = get_session()
     user = session.query(User).filter_by(raw_cv_path=str(path)).first()
     if not user:
-        user = User(name=path.stem, email="", raw_cv_path=str(path), parsed_cv=parsed.model_dump())
+        user = User(name=path.stem, email=f"anon_{path.stem}@local", raw_cv_path=str(path), parsed_cv=parsed.model_dump())
         session.add(user)
         session.flush()
 
@@ -553,6 +557,114 @@ def profile(
 
     session.commit()
     session.close()
+
+
+if __name__ == "__main__":
+    cli()
+
+
+@cli.command()
+@click.option("--once", is_flag=True, help="Run a single pipeline cycle and exit")
+@click.option("--dry-run", is_flag=True, help="Preview actions without submitting")
+def daemon(once: bool, dry_run: bool):
+    """Run the autonomous job-finding daemon."""
+    from src.daemon import run_forever, run_once as daemon_run_once
+    from config import DAEMON_SLEEP_HOURS
+
+    init_db()
+
+    if once:
+        summary = daemon_run_once(dry_run=dry_run)
+        click.echo(f"\n[bold cyan]JobFinder Daemon[/bold cyan] — {'[yellow]DRY RUN[/yellow]' if dry_run else '[green]LIVE[/green]'}")
+        click.echo(f"  Jobs found:   {summary['jobs_found']}")
+        click.echo(f"  Jobs applied: {summary['jobs_applied']}")
+        click.echo(f"  Jobs skipped: {summary['jobs_skipped']}")
+        click.echo(f"  Jobs failed:  {summary['jobs_failed']}")
+        click.echo(f"  Callbacks:    {summary['callbacks']}")
+        if summary.get("applied_companies"):
+            click.echo("  Companies applied to:")
+            for c in summary["applied_companies"]:
+                click.echo(f"    - {c}")
+        if summary.get("skipped_reasons"):
+            click.echo("  Skipped:")
+            for r in summary["skipped_reasons"]:
+                click.echo(f"    - {r}")
+    else:
+        click.echo(f"[bold cyan]JobFinder Daemon[/bold cyan] starting (sleep: {DAEMON_SLEEP_HOURS}h)...")
+        run_forever(dry_run=dry_run)
+
+
+@cli.command("track-response")
+@click.argument("application_id", type=int)
+@click.argument("status", type=click.Choice(["rejected", "interview", "ghosted", "offer"]))
+def track_response(application_id: int, status: str):
+    """Track the response status of an application."""
+    from src.optimization import track_response as update_response
+
+    init_db()
+    result = update_response(application_id, status)
+    if result["success"]:
+        click.echo(f"[green]Application {application_id} → {status}[/green]")
+    else:
+        click.echo(f"[red]Error: {result.get('error', 'Unknown')}[/red]")
+
+
+@cli.command()
+def report():
+    """Show the latest application summary report."""
+    from src.database import Application, ApplicationResult, get_session
+    from src.optimization import analyze_performance, auto_mark_ghosted
+
+    init_db()
+    session = get_session()
+
+    try:
+        total_apps = session.query(Application).count()
+        total_results = session.query(ApplicationResult).count()
+
+        statuses = session.query(Application.status, __import__("sqlalchemy").func.count(Application.id)).group_by(Application.status).all()
+
+        click.echo("[bold cyan]JobFinder Report[/bold cyan]")
+        click.echo(f"  Total applications: {total_apps}")
+        click.echo(f"  Detailed results:   {total_results}")
+        click.echo("\n  Status breakdown:")
+
+        for status_val, count in statuses:
+            status_color = {
+                "pending": "yellow", "submitted": "green",
+                "rejected": "red", "interview": "cyan",
+                "offer": "bright_green", "ghosted": "dim",
+                "failed": "red",
+            }.get(status_val or "", "white")
+            click.echo(f"    [{status_color}]{status_val}: {count}[/{status_color}]")
+
+        # Auto-mark ghosted
+        ghosted = auto_mark_ghosted()
+        if ghosted:
+            click.echo(f"\n  [yellow]{ghosted} applications auto-marked as ghosted[/yellow]")
+
+        # Performance analysis
+        perf = analyze_performance(min_applications=3)
+
+        if perf.get("total_applications", 0) > 0:
+            click.echo(f"\n  [bold]Performance Analysis[/bold] ({perf.get('total_applications', 0)} applications)")
+            best = perf.get("best_approach")
+            if best:
+                click.echo(f"    Best approach: {best['cv_path'][-60:]}")
+                click.echo(f"    Callback rate: {best['callback_percentage']}")
+                click.echo(f"    ({best['interviews']} interviews, {best['offers']} offers / {best['total']} submitted)")
+            if perf.get("research_impact"):
+                click.echo(f"    Research impact: {perf['research_impact']}")
+
+            # Ghosted follow-up suggestions
+            from src.optimization import suggest_follow_ups
+            follow_ups = suggest_follow_ups()
+            if follow_ups:
+                click.echo(f"\n  [bold]Follow-up candidates ({len(follow_ups)})[/bold]:")
+                for f in follow_ups[:5]:
+                    click.echo(f"    {f['job_title']} @ {f['company']} — {f['days_since_applied']} days ago")
+    finally:
+        session.close()
 
 
 if __name__ == "__main__":

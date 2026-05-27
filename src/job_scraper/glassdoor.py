@@ -52,6 +52,14 @@ class GlassdoorScraper(BaseScraper):
             try:
                 page.goto(url, timeout=SCRAPER_TIMEOUT, wait_until="domcontentloaded")
 
+                # Check if blocked by Cloudflare/CAPTCHA
+                page_title = page.title()
+                blocked_indicator = self.selectors.get("blocked_indicator", "")
+                if blocked_indicator and blocked_indicator.split("=")[1] in page_title.lower():
+                    logger.warning(f"[GlassdoorScraper] Blocked by Cloudflare/CAPTCHA (title: {page_title})")
+                    browser.close()
+                    return jobs
+
                 # Dismiss sign-up modal if present
                 self._dismiss_modal(page)
 

@@ -1,13 +1,14 @@
 {
   "linkedin": {
-    "job_card": ".job-card-container",
-    "title": ".job-card-list__title",
-    "title_link": "a",
-    "company": ".job-card-container__company-name",
-    "location": ".job-card-container__metadata-item",
+    "job_card": ".job-search-card",
+    "title": ".base-search-card__title",
+    "title_link": ".base-card__full-link",
+    "company": ".base-search-card__subtitle",
+    "location": ".job-search-card__location",
     "description": ".show-more-less-html__markup",
     "apply_button": ".jobs-apply-button",
-    "scroll_container": ".jobs-search__results-list"
+    "scroll_container": ".jobs-search__results-list",
+    "posted": "time"
   },
   "indeed": {
     "job_card": ".job_seen_beacon",
@@ -17,7 +18,8 @@
     "salary": "[data-testid='attribute_snippet_testid']",
     "description": "#jobDescriptionText",
     "apply_button": "[data-testid='applyButton']",
-    "scroll_container": "#ResultsContainer"
+    "scroll_container": "#ResultsContainer",
+    "blocked_indicator": "title=Blocked"
   },
   "glassdoor": {
     "job_card": "[data-test='jobListing']",
@@ -27,6 +29,7 @@
     "salary": "[data-test='salarySource']",
     "description": "[data-test='jobDescriptionContent']",
     "apply_button": "[data-test='apply-btn']",
-    "scroll_container": "[data-test='JobListingResults']"
+    "scroll_container": "[data-test='JobListingResults']",
+    "blocked_indicator": "title=Just a moment..."
   }
 }

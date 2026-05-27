@@ -27,8 +27,10 @@ SessionLocal = sessionmaker(bind=engine)
 
 __all__ = [
     "Application",
+    "ApplicationResult",
     "Base",
     "CVImprovementLog",
+    "CompanyResearch",
     "JobPosting",
     "User",
     "UserProfile",
@@ -107,6 +109,39 @@ class CVImprovementLog(Base):
     improved_text = Column(Text)
     model_used = Column(String(100))
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class CompanyResearch(Base):
+    """Research intelligence gathered about a company before applying."""
+
+    __tablename__ = "company_research"
+    id = Column(Integer, primary_key=True)
+    job_id = Column(Integer, ForeignKey("job_postings.id"))
+    company_name = Column(String(255), nullable=False)
+    summary_brief = Column(Text)
+    sources = Column(JSON)  # [{"url": "...", "title": "..."}]
+    red_flags_found = Column(JSON, nullable=True)  # ["flag1", "flag2"]
+    researched_at = Column(DateTime, default=datetime.utcnow)
+    job = relationship("JobPosting", backref="research_entries")
+
+
+class ApplicationResult(Base):
+    """Detailed tracking of each application's metadata and outcome."""
+
+    __tablename__ = "application_results"
+    id = Column(Integer, primary_key=True)
+    application_id = Column(Integer, ForeignKey("applications.id"), nullable=True)
+    job_id = Column(Integer, ForeignKey("job_postings.id"))
+    cv_used_path = Column(String(500))
+    cover_letter_text = Column(Text)
+    company_research_id = Column(Integer, ForeignKey("company_research.id"), nullable=True)
+    tailored_version_id = Column(String(100), nullable=True)
+    status = Column(String(50), default="submitted")  # submitted, rejected, interview, ghosted, offer
+    error_message = Column(Text, nullable=True)
+    applied_at = Column(DateTime, default=datetime.utcnow)
+    response_received_at = Column(DateTime, nullable=True)
+    job = relationship("JobPosting", backref="application_results")
+    application = relationship("Application", backref="results")
 
 
 # ── Database Functions ──────────────────────────────────────────────────────

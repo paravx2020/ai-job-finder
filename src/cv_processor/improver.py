@@ -14,10 +14,9 @@ def _get_client():
     if _ai_client is not None:
         return _ai_client
     if GEMINI_API_KEY:
-        import google.generativeai as genai
+        from google import genai
 
-        genai.configure(api_key=GEMINI_API_KEY)
-        _ai_client = ("gemini", genai)
+        _ai_client = ("gemini", genai.Client(api_key=GEMINI_API_KEY))
     elif OPENAI_API_KEY:
         from openai import OpenAI
 
@@ -33,9 +32,7 @@ def _call_ai(prompt: str, model: str, section: str) -> str:
     model_name = model or AI_MODEL
 
     if client_type == "gemini":
-        genai = client
-        m = genai.GenerativeModel(model_name)
-        resp = m.generate_content(prompt)
+        resp = client.models.generate_content(model=model_name, contents=prompt)
         return resp.text.strip()
 
     elif client_type == "openai":
@@ -120,3 +117,33 @@ def improve_cv(parsed_cv: ParsedCV, domain: str = "software engineering") -> CVI
             progress.advance(task)
 
     return CVImprovement(improved_sections=improved, changes=[ChangeDetail(**c) for c in changes])
+
+
+def tailor_cv_for_job(parsed_cv: ParsedCV, job_data: dict) -> dict:
+    """Tailor CV for a specific job posting.
+
+    Unlike improve_cv (generic improvement), this takes a specific job
+    description as context and optimizes the CV for that role.
+
+    Args:
+        parsed_cv: The parsed CV with sections and skills
+        job_data: Dict with title, company, description (optional)
+
+    Returns:
+        Dict with: tailored_cv_text, cover_letter, extracted_requirements
+    """
+    from src.tailoring import (
+        extract_job_requirements,
+        generate_cover_letter,
+        generate_tailored_cv,
+    )
+
+    requirements = extract_job_requirements(job_data)
+    tailored_cv = generate_tailored_cv(parsed_cv, job_data)
+    cover_letter = generate_cover_letter(parsed_cv, job_data)
+
+    return {
+        "tailored_cv_text": tailored_cv,
+        "cover_letter": cover_letter,
+        "requirements": requirements,
+    }

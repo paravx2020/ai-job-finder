@@ -254,6 +254,58 @@
       "aliases": ["microsoft azure"],
       "related": ["cloud", "devops", "azure devops"]
     },
+    "active directory": {
+      "aliases": ["entra id", "azure ad", "ad"],
+      "related": ["iam", "identity and access management", "windows server", "azure"]
+    },
+    "azure devops": {
+      "aliases": ["ado", "azure pipelines"],
+      "related": ["ci/cd", "azure", "devops"]
+    },
+    "azure virtual machines": {
+      "aliases": ["azure vm", "azure vms"],
+      "related": ["azure", "compute", "infrastructure"]
+    },
+    "azure monitor": {
+      "aliases": [],
+      "related": ["azure", "monitoring", "observability"]
+    },
+    "azure backup": {
+      "aliases": [],
+      "related": ["azure", "disaster recovery", "backup"]
+    },
+    "azure update manager": {
+      "aliases": ["update management"],
+      "related": ["azure", "patch management", "automation"]
+    },
+    "windows server": {
+      "aliases": ["windows server 2016", "windows server 2019"],
+      "related": ["active directory", "infrastructure", "microsoft"]
+    },
+    "powershell": {
+      "aliases": ["powershell scripting", "posh"],
+      "related": ["automation", "windows server", "azure"]
+    },
+    "endpoint manager": {
+      "aliases": ["microsoft endpoint manager", "intune"],
+      "related": ["mdm", "device management", "microsoft 365"]
+    },
+    "microsoft 365": {
+      "aliases": ["m365", "office 365"],
+      "related": ["exchange", "teams", "sharepoint", "azure"]
+    },
+    "exchange": {
+      "aliases": ["exchange online", "exchange admin"],
+      "related": ["microsoft 365", "email", "active directory"]
+    },
+    "sharepoint": {
+      "aliases": ["sharepoint online", "sharepoint admin"],
+      "related": ["microsoft 365", "intranet", "document management"]
+    },
+    "teams": {
+      "aliases": ["microsoft teams", "teams admin"],
+      "related": ["microsoft 365", "collaboration", "communication"]
+    },
     "docker": {
       "aliases": [],
       "related": ["containers", "kubernetes", "devops"]
@@ -402,6 +454,14 @@
       "aliases": [],
       "related": ["docker", "containers", "devops"]
     },
+    "cisco meraki": {
+      "aliases": ["meraki"],
+      "related": ["networking", "network management", "mdm"]
+    },
+    "ninjaone": {
+      "aliases": [],
+      "related": ["it management", "monitoring", "helpdesk", "remote monitoring"]
+    },
     "figma": {
       "aliases": [],
       "related": ["design", "ui/ux", "prototyping"]
@@ -454,6 +514,22 @@
     }
   },
   "cybersecurity": {
+    "microsoft defender": {
+      "aliases": ["defender", "microsoft defender for endpoint"],
+      "related": ["security", "microsoft 365", "sentinel", "endpoint protection"]
+    },
+    "microsoft sentinel": {
+      "aliases": ["sentinel", "azure sentinel"],
+      "related": ["siem", "security operations", "microsoft 365", "threat detection"]
+    },
+    "rbac": {
+      "aliases": ["role-based access control", "role based access control"],
+      "related": ["iam", "authorization", "active directory", "security"]
+    },
+    "conditional access": {
+      "aliases": ["ca policy", "conditional access policy"],
+      "related": ["identity and access management", "entra id", "security", "mfa"]
+    },
     "penetration testing": {
       "aliases": ["pentesting", "ethical hacking"],
       "related": ["security", "vulnerability assessment", "networking"]

@@ -31,6 +31,14 @@ class IndeedScraper(BaseScraper):
                 page.goto(url, timeout=SCRAPER_TIMEOUT)
                 time.sleep(random.uniform(*SCRAPER_DELAY))
 
+                # Check if blocked by Cloudflare/CAPTCHA
+                page_title = page.title()
+                blocked_indicator = self.selectors.get("blocked_indicator", "")
+                if blocked_indicator and blocked_indicator.split("=")[1] in page_title.lower():
+                    logger.warning(f"[IndeedScraper] Blocked by Cloudflare/CAPTCHA (title: {page_title})")
+                    browser.close()
+                    return jobs
+
                 cards = page.query_selector_all(self.selectors.get("job_card", ".job_seen_beacon"))
                 for card in cards[:max_results]:
                     try:

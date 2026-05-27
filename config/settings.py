@@ -45,8 +45,21 @@ USER_AGENT = (
 )
 
 # --- Auto-Apply ---
-MAX_APPLICATIONS_PER_RUN = 5
-CONFIRM_BEFORE_SUBMIT = True
+MAX_APPLICATIONS_PER_RUN = int(os.getenv("MAX_APPLICATIONS_PER_RUN", "5"))
+CONFIRM_BEFORE_SUBMIT = os.getenv("CONFIRM_BEFORE_SUBMIT", "true").lower() in ("true", "1", "yes")
+DRY_RUN = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
+AUTO_APPLY_THRESHOLD = float(os.getenv("AUTO_APPLY_THRESHOLD", "0.6"))
+APPLY_RATE_LIMIT_DELAY = int(os.getenv("APPLY_RATE_LIMIT_DELAY", "3"))
+APPLY_MAX_RETRIES = int(os.getenv("APPLY_MAX_RETRIES", "2"))
+
+# --- Daemon ---
+DAEMON_SLEEP_HOURS = int(os.getenv("DAEMON_SLEEP_HOURS", "6"))
+COMPANY_RESEARCH_ENABLED = os.getenv("COMPANY_RESEARCH_ENABLED", "true").lower() in ("true", "1", "yes")
+COMPANY_RED_FLAG_KEYWORDS = os.getenv("COMPANY_RED_FLAG_KEYWORDS", "lawsuit,layoff,class action,toxic,hostile work").split(",")
+TRACK_OPTIMIZATION_ENABLED = os.getenv("TRACK_OPTIMIZATION_ENABLED", "true").lower() in ("true", "1", "yes")
+FOLLOW_UP_GHOSTED_AFTER_DAYS = int(os.getenv("FOLLOW_UP_GHOSTED_AFTER_DAYS", "14"))
+EMAIL_DAILY_SUMMARY = os.getenv("EMAIL_DAILY_SUMMARY", "true").lower() in ("true", "1", "yes")
+EMAIL_SUMMARY_TIME = os.getenv("EMAIL_SUMMARY_TIME", "08:00")
 
 # --- App ---
 APP_NAME = "JobFinder"
