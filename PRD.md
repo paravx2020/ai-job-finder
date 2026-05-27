@@ -4,12 +4,21 @@
 An intelligent career agent that reads a user's CV, improves it, finds matching job opportunities, researches companies, tailors applications, and auto-applies — evolving into a dual-sided marketplace connecting employers with ideal candidates.
 
 ## 2. Core Flow (Phase 1+2)
-```
-Upload CV → Parse & Score → Improve CV (domain-tailored)
-         → Scrape Jobs (LinkedIn, Indeed, Glassdoor)
-         → Match Top K → Company Research → Red Flag Check
-         → CV Tailoring → Cover Letter Generation
-         → Auto-Apply → Track Response → Notify User
+
+```mermaid
+flowchart LR
+    A[Upload CV] --> B[Parse & Score]
+    B --> C[Improve CV<br/>domain-tailored]
+    C --> D[Scrape Jobs<br/>LinkedIn · Indeed · Glassdoor]
+    D --> E[Match Top K]
+    E --> F[Company Research]
+    F --> G{Red Flag?}
+    G -->|No| H[CV Tailoring]
+    G -->|Yes| I[Skip]
+    H --> J[Cover Letter<br/>Generation]
+    J --> K[Auto-Apply]
+    K --> L[Track Response]
+    L --> M[Notify User]
 ```
 
 ## 3. Features by Phase

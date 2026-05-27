@@ -111,11 +111,25 @@ ai-job-finder/
 - Skills taxonomy cached in memory after first load (not re-read from disk)
 
 ## Daemon Pipeline Flow
-```
-CV parse → job search → match (embedding) → filter by threshold
-  → company research → red flag check → CV tailoring
-  → cover letter generation → apply (retry/captcha-aware)
-  → save results → email summary → sleep → repeat
+
+```mermaid
+flowchart LR
+    A[Parse CV] --> B[Search Jobs]
+    B --> C[Match by Embedding]
+    C --> D{Threshold ≥ 0.6?}
+    D -->|No| E[Skip]
+    D -->|Yes| F[Research Company]
+    F --> G{Red Flags?}
+    G -->|Yes| E
+    G -->|No| H[Tailor CV]
+    H --> I[Generate Cover Letter]
+    I --> J[Submit Application]
+    J --> K[Save to DB]
+    K --> L[Generate Reports]
+    L --> M[Email Summary]
+    M --> N{Daemon Mode?}
+    N -->|Yes| A
+    N -->|No| O([Done])
 ```
 
 ## Need to Address

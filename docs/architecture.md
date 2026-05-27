@@ -105,22 +105,27 @@ No API key required — reduces dependency overhead. Falls back gracefully when 
 
 ## Pipeline Flow (Autonomous Mode)
 
-```
-1. Parse CV from data/cvs/ (most recent file auto-detected)
-2. Score CV across 4 dimensions
-3. Improve CV via AI (summary, experience, skills sections)
-4. Search jobs across LinkedIn, Indeed, Glassdoor
-5. Deduplicate by URL
-6. Match via embedding similarity
-7. Filter by threshold (0.6 for auto-apply)
-8. For each matched job (max 10):
-   a. Research company (web search + AI brief)
-   b. Check red flags (skip if found)
-   c. Tailor CV for the role
-   d. Generate cover letter
-   e. Submit application (retry + CAPTCHA-aware)
-9. Save all results to database
-10. Generate HTML + JSON reports
-11. Send email summary (if configured)
-12. [Continuous mode] Sleep 6h → repeat
+```mermaid
+flowchart TD
+    A["1. Parse CV from data/cvs/<br/>(most recent auto-detected)"] --> B["2. Score CV (4 dimensions)"]
+    B --> C["3. Improve CV via AI<br/>(summary, experience, skills)"]
+    C --> D["4. Search Jobs<br/>(LinkedIn, Indeed, Glassdoor)"]
+    D --> E["5. Deduplicate by URL"]
+    E --> F["6. Match via embedding similarity"]
+    F --> G["7. Filter by threshold (≥ 0.6)"]
+    G --> H{"8. For each matched job<br/>(max 10 per cycle)"}
+    H --> I["a. Research company<br/>(web search + AI brief)"]
+    I --> J{"b. Check red flags"}
+    J -->|Found| K["⛔ Skip job"]
+    J -->|Clean| L["c. Tailor CV for role"]
+    L --> M["d. Generate cover letter"]
+    M --> N["e. Submit application<br/>(retry + CAPTCHA-aware)"]
+    N --> O["9. Save all results to DB"]
+    O --> P["10. Generate HTML + JSON reports"]
+    P --> Q["11. Send email summary"]
+    Q --> R{"12. Continuous mode?"}
+    R -->|Yes| S["Sleep 6h"]
+    S --> A
+    R -->|No| T["✅ Done"]
+    H --> K
 ```

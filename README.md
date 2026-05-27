@@ -108,41 +108,28 @@ Global flags: `--verbose`/`-v`, `--quiet`/`-q`, `--db <path>`
 
 ## Architecture
 
-```
-                   ┌──────────────────────────────────────────────────┐
-                   │               CLI (src/main.py)                  │
-                   │  analyze · search · apply · daemon · track      │
-                   │  list · stats · profile · report · migrate      │
-                   └──────┬───────────────────────────┬───────────────┘
-                          │                           │
-              ┌───────────▼──────────┐    ┌───────────▼──────────────┐
-              │    CV Processor      │    │     Job Scraper          │
-              │  parser · scorer     │    │  LinkedIn · Indeed       │
-              │  improver (AI)       │    │  Glassdoor · Engine      │
-              └───────────┬──────────┘    └───────────┬──────────────┘
-                          │                           │
-              ┌───────────▼───────────────────────────▼──────────────┐
-              │               Matcher (sentence-transformers)         │
-              │           Embedding-based cosine similarity           │
-              └───────────────────────┬───────────────────────────────┘
-                                      │
-              ┌───────────────────────▼───────────────────────────────┐
-              │          Pre-Apply (company_research + tailoring)     │
-              │  Web search → AI summary → red flag check            │
-              │  CV tailoring → cover letter generation               │
-              └───────────────────────┬───────────────────────────────┘
-                                      │
-              ┌───────────────────────▼───────────────────────────────┐
-              │              Auto-Applier (Playwright)                │
-              │         CAPTCHA detection · Form filling · Retry      │
-              └───────────────────────┬───────────────────────────────┘
-                                      │
-              ┌───────────────────────▼───────────────────────────────┐
-              │         Database (SQLite via SQLAlchemy)              │
-              │   7 tables: User · UserProfile · JobPosting          │
-              │   Application · CVImprovementLog · CompanyResearch    │
-              │   ApplicationResult                                   │
-              └───────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    CLI["CLI (src/main.py)<br/>analyze · search · apply · daemon · track<br/>list · stats · profile · report · migrate"]
+    
+    subgraph Process[" "]
+        direction LR
+        CVP["CV Processor<br/>parser · scorer · improver (AI)"]
+        JBS["Job Scraper<br/>LinkedIn · Indeed · Glassdoor · Engine"]
+    end
+    
+    MATCH["Matcher (sentence-transformers)<br/>Embedding-based cosine similarity"]
+    PRE["Pre-Apply<br/>Web search → AI summary → red flag check<br/>CV tailoring → cover letter generation"]
+    AA["Auto-Applier (Playwright)<br/>CAPTCHA detection · Form filling · Retry"]
+    DB[("Database (SQLite via SQLAlchemy)<br/>7 tables: User · UserProfile · JobPosting<br/>Application · CVImprovementLog<br/>CompanyResearch · ApplicationResult")]
+    
+    CLI --> CVP
+    CLI --> JBS
+    CVP --> MATCH
+    JBS --> MATCH
+    MATCH --> PRE
+    PRE --> AA
+    AA --> DB
 ```
 
 ## Tech Stack

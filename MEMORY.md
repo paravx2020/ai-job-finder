@@ -46,8 +46,17 @@ python -m src.main daemon --once --dry-run                    # Pipeline preview
 
 ### What It Does (9-Step Pipeline)
 
-```
-CV → Parse → Score → Improve → Search → Match → Research → Tailor → Apply → Track
+```mermaid
+flowchart LR
+    A[CV] --> B[Parse]
+    B --> C[Score]
+    C --> D[Improve]
+    D --> E[Search]
+    E --> F[Match]
+    F --> G[Research]
+    G --> H[Tailor]
+    H --> I[Apply]
+    I --> J[Track]
 ```
 
 1. **CV Analysis** — Parse PDF/DOCX, score quality across 4 dimensions, rewrite with AI
@@ -138,6 +147,93 @@ ai-job-finder/
 - **AI model**: `gemini-3.5-flash` (default, via google.genai SDK)
 
 ---
+
+```mermaid
+erDiagram
+    User ||--o{ Application : makes
+    User ||--o{ CVImprovementLog : improves
+    UserProfile ||--o{ Application : by
+    JobPosting ||--o{ Application : for
+    Application ||--|| CompanyResearch : researches
+    Application ||--|| ApplicationResult : results-in
+    CompanyResearch ||--|| ApplicationResult : referenced-by
+
+    User {
+        int id PK
+        string name
+        string email UK
+        string raw_cv_path
+        json parsed_cv
+        datetime created_at
+        datetime updated_at
+    }
+
+    UserProfile {
+        int id PK
+        string email UK
+        string name
+        string phone
+        string domain
+        string location
+    }
+
+    JobPosting {
+        int id PK
+        string source
+        string title
+        string company
+        text description
+        string url UK
+        string salary
+        string location
+        date posted_date
+        datetime created_at
+    }
+
+    Application {
+        int id PK
+        int user_id FK
+        int job_id FK
+        string status
+        float match_score
+        text match_reason
+        datetime applied_at
+        text response
+    }
+
+    CVImprovementLog {
+        int id PK
+        int user_id FK
+        string section
+        text original_text
+        text improved_text
+        string model_used
+        datetime created_at
+    }
+
+    CompanyResearch {
+        int id PK
+        int application_id FK
+        string company_name
+        text summary_brief
+        json sources
+        json red_flags
+        datetime created_at
+    }
+
+    ApplicationResult {
+        int id PK
+        int application_id FK
+        string cv_path
+        text cover_letter
+        int company_research_id FK
+        string tailored_version
+        string status
+        datetime follow_up_date
+        text notes
+        datetime created_at
+    }
+```
 
 ## Database Schema (7 tables)
 
